@@ -1,0 +1,119 @@
+import pandas as pd
+import numpy as np
+import matplotlib as plt
+import chaospy as cp
+
+df = pd.read_excel('Database_Final.xlsx')
+trend = df.copy()
+
+# Select a given funding scheme
+Slice = df.ix[:,0:6]
+
+# Select a given programming period
+Program = Slice.loc[Slice['ProgrammingPeriod'] == '2000-2006']
+del Program['Country']
+del Program['NUTS1Code']
+del Program['ProgrammingPeriod']
+Program
+
+#Separate the information for the single NUTS2 areas
+Program2 = Program.groupby('NUTS2Code').apply(lambda x: list(x.ERDF_TOTAL))
+
+#Put again together a table with the data
+Program3 = pd.DataFrame(Program2, columns = ['Year'])
+Program3['Year'].apply(lambda x : pd.Series([x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10]\
+, x[11], x[12], x[13], x[14], x[15]]))
+Program3[[2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015]] =\
+Program3['Year'].apply(lambda x : pd.Series([x[0], x[1], x[2], x[3], x[4],\
+x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]]))
+del Program3['Year']
+Program4 = Program3.T
+Program4['Year'] = Program4.index
+Program4
+#Slice again the table to obtain the years to perform the regression on
+Program5 = Program4[1:8]
+Program5
+year = Program5[['Year']]
+
+# Get the slope and concatenate the slope to the rest of the countries
+slope = pd.DataFrame(np.linalg.pinv(year.T.dot(year)).dot(year.T).dot(Program5), ['Slope'], Program5.columns)
+Program6 = pd.concat([Program5, slope])
+year = Program5[['Year']]
+slope = pd.DataFrame(np.linalg.pinv(year.T.dot(year)).dot(year.T).dot(Program5), ['Slope'], Program5.columns)
+Program6 = pd.concat([Program5, slope])
+
+# Drop the year row and drop the zeros values
+Program7 = Program6.T[:272]
+Program7 = Program7.drop(Program7[Program7.Slope == 0].index)
+
+# Get the ranking
+SlopeMin = Program7[['Slope']].min()
+SlopeMax = Program7[['Slope']].max()
+Program7['SlopeRel'] = (Program7['Slope'] - SlopeMin[0])/(SlopeMax[0]-SlopeMin[0])
+Program8 = Program7.sort_values(by=['SlopeRel'], ascending=[True])
+Program8['Country']=np.arange(1,208)
+
+# Print out the range of values in increasing order
+plt.scatter(Program8['Country'], Program8['SlopeRel'], label = Program8.index)
+plt.xticks(Program8['Country'], Program8.index.values)
+plt.show()
+
+#Random part - It is currently operated on one country only for the sake of showing one example
+muDEEO = Program9['DEE0']
+
+# Define the FiMin and FiMax distributions
+FiMin = cp.Uniform(0.20, 0.40)
+distributionFiMin = FiMin.sample(10000, rule="S")
+np.random.shuffle(distributionFiMin)
+FiMax = cp.Uniform(0.80, 1.00)
+distributionFiMax = FiMax.sample(10000, rule="S")
+np.random.shuffle(distributionFiMax)
+distributionFiDEEO = muDEEO * distributionFiMin + distributionFiMax - distributionFiMin
+
+# Define the Alpha Distribution
+distributionAlphaMax = 1 - distributionFiDEEO
+Omega = cp.Uniform(0.00, 1.00)
+distributionOmega = Omega.sample(10000, rule="S")
+np.random.shuffle(distributionOmega)
+distributionAlphaDEEO = distributionAlphaMax * distributionOmega
+
+# Generate the Tables with the Random values
+RFi = pd.Series(distributionFiDEEO)
+RAlpha = pd.Series(distributionAlphaDEEO)
+R = pd.concat([RFi, RAlpha], join='inner', axis=1)
+R.columns = ['Fi', 'Alpha']
+R['2009'] = R['Fi']* (Program4['DEE0']['2009']+Program4['DEE0']['2010']+Program4['DEE0']['2011']+Program4['DEE0']['2012']+\
+Program4['DEE0']['2013']+Program4['DEE0']['2014']+Program4['DEE0']['2015'])
+R['2008'] = R['Fi']* Program4['DEE0']['2008']
+R['2007'] = R['Fi']* Program4['DEE0']['2007']
+R['2006'] = R['Fi']* Program4['DEE0']['2006']
+R['2005'] = R['Fi']* Program4['DEE0']['2005']
+R['2004'] = R['Fi']* Program4['DEE0']['2004']
+R['2003'] = R['Fi']* Program4['DEE0']['2003']
+R['2002'] = R['Fi']* Program4['DEE0']['2002']
+R['2001'] = R['Fi']* Program4['DEE0']['2001']
+R['2000'] = Program4['DEE0']['2000']
+R['y2000']=np.repeat(2000,10000)
+R['y2001']=np.repeat(2001,10000)
+R['y2002']=np.repeat(2002,10000)
+R['y2003']=np.repeat(2003,10000)
+R['y2004']=np.repeat(2004,10000)
+R['y2005']=np.repeat(2005,10000)
+R['y2006']=np.repeat(2006,10000)
+R['y2007']=np.repeat(2007,10000)
+R['y2008']=np.repeat(2008,10000)
+R['y2009']=np.repeat(2009,10000)
+
+# Plot of the yearly regressions
+plt.plot(R['y2000'], R['2000'], c = 'b', label = 'DEEO')
+plt.plot(R['y2001'], R['2001'], c = 'b', label = '')
+plt.plot(R['y2002'], R['2002'], c = 'b', label = '')
+plt.plot(R['y2003'], R['2003'], c = 'b', label = '')
+plt.plot(R['y2004'], R['2004'], c = 'b', label = '')
+plt.plot(R['y2005'], R['2005'], c = 'b', label = '')
+plt.plot(R['y2006'], R['2006'], c = 'b', label = '')
+plt.plot(R['y2007'], R['2007'], c = 'b', label = '')
+plt.plot(R['y2008'], R['2008'], c = 'b', label = '')
+plt.plot(R['y2009'], R['2009'], c = 'b', label = '')
+plt.legend()
+plt.show()

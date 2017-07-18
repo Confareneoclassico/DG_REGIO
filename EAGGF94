@@ -1,0 +1,476 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import chaospy as cp
+import random
+from scipy import stats
+%matplotlib inline
+
+df2 = pd.read_excel('Index slope 94-99.xlsx', sheetname='ESF94-99', parse_cols = 'BZ:CP')
+df2.columns = df2.iloc[2]
+del df2[2009]
+del df2[2013]
+df3 = df2.iloc[3:216]
+df4 = df3.set_index('Row Labels')
+mu = pd.DataFrame(index = [1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007], \
+data = (df4.columns.values-1993)*(df4[2007]['AT11']-df4[1994]['AT11'])/(2003-1993))
+mu = mu.rename(columns={0: 'mu1'})
+df4b = pd.concat([df4, mu.T])
+for i in range (2004,2008):
+    df4b[i]['mu1'] = 1
+
+for i, row in df4b.iterrows():
+    b = (df4b[1994]-df4b[1994]['mu1'], df4b[1995]-df4b[1995]['mu1'], df4b[1996]-df4b[1996]['mu1'],\
+    df4b[1997]-df4b[1997]['mu1'], df4b[1998]-df4b[1998]['mu1'], df4b[1999]-df4b[1999]['mu1'], \
+    df4b[2000]-df4b[2000]['mu1'], df4b[2001]-df4b[2001]['mu1'], df4b[2002]-df4b[2002]['mu1'], \
+    df4b[2003]-df4b[2003]['mu1'], df4b[2004]-df4b[2004]['mu1'], df4b[2005]-df4b[2005]['mu1'],\
+    df4b[2006]-df4b[2006]['mu1'], df4b[2007]-df4b[2007]['mu1'])
+    c = sum(b)
+    df4b['muavg']= c
+    
+# Compute the relative scale
+df4b['murel']=(max(df4b['muavg'])-df4b['muavg'])/(max(df4b['muavg'])-min(df4b['muavg']))
+df6 = df4b.sort_values(['murel'], ascending = True)
+df7 = df6.drop('mu1')
+
+# Prepare for the expenditure allocations
+df21 = pd.read_excel('Index slope 94-99.xlsx', sheetname='EAGGF94-99', parse_cols = 'H:W')
+df21.columns = df21.iloc[3]
+df31 = df21.iloc[4:217]
+df41 = df31.set_index('Row Labels')
+df51 = df41.T.fillna(0)
+
+# Define the residues A
+B9 = []
+for n in range(1,10):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B9.append(A(n))
+C9 = np.array(B9)
+D9 = np.insert(C9[0], [0, 0, 0, 0, 0, 0, 0, 0], 0)
+E9 = np.insert(C9[1], [0, 0, 0, 0, 0, 0, 0], 0)
+F9 = np.insert(C9[2], [0, 0, 0, 0, 0, 0], 0)
+G9 = np.insert(C9[3], [0, 0, 0, 0, 0], 0)
+H9 = np.insert(C9[4], [0, 0, 0, 0], 0)
+I9 = np.insert(C9[5], [0, 0, 0], 0)
+J9 = np.insert(C9[6], [0, 0], 0)
+K9 = np.insert(C9[7], [0], 0)
+L9 = np.array(C9[8])
+M9 = (D9, E9, F9, G9, H9, I9, J9, K9, L9)
+
+B8 = []
+for n in range(1,9):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B8.append(A(n))
+C8 = np.array(B8)
+D8 = np.insert(C8[0], [0, 0, 0, 0, 0, 0, 0], 0)
+E8 = np.insert(C8[1], [0, 0, 0, 0, 0, 0], 0)
+F8 = np.insert(C8[2], [0, 0, 0, 0, 0], 0)
+G8 = np.insert(C8[3], [0, 0, 0, 0], 0)
+H8 = np.insert(C8[4], [0, 0, 0], 0)
+I8 = np.insert(C8[5], [0, 0], 0)
+J8 = np.insert(C8[6], [0], 0)
+K8 = np.array(C8[7])
+L8 = (D8, E8, F8, G8, H8, I8, J8, K8)
+
+B7 = []
+for n in range(1,8):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B7.append(A(n))
+C7 = np.array(B7)
+D7 = np.insert(C7[0], [0, 0, 0, 0, 0, 0], 0)
+E7 = np.insert(C7[1], [0, 0, 0, 0, 0], 0)
+F7 = np.insert(C7[2], [0, 0, 0, 0], 0)
+G7 = np.insert(C7[3], [0, 0, 0], 0)
+H7 = np.insert(C7[4], [0, 0], 0)
+I7 = np.insert(C7[5], [0], 0)
+J7 = np.array(C7[6])
+K7 = (D7, E7, F7, G7, H7, I7, J7)
+
+B6 = []
+for n in range(1,7):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B6.append(A(n))
+C6 = np.array(B6)
+D6 = np.insert(C6[0], [0, 0, 0, 0, 0], 0)
+E6 = np.insert(C6[1], [0, 0, 0, 0], 0)
+F6 = np.insert(C6[2], [0, 0, 0], 0)
+G6 = np.insert(C6[3], [0, 0], 0)
+H6 = np.insert(C6[4], [0], 0)
+I6 = np.array(C6[5])
+J6 = (D6, E6, F6, G6, H6, I6)
+
+B5 = []
+for n in range(1,6):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B5.append(A(n))
+C5 = np.array(B5)
+D5 = np.insert(C5[0], [0, 0, 0, 0], 0)
+E5 = np.insert(C5[1], [0, 0, 0], 0)
+F5 = np.insert(C5[2], [0, 0], 0)
+G5 = np.insert(C5[3], [0], 0)
+H5 = np.array(C5[4])
+I5 = (D5, E5, F5, G5, H5)
+
+B4 = []
+for n in range(1,5):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B4.append(A(n))
+C4 = np.array(B4)
+D4 = np.insert(C4[0], [0, 0, 0], 0)
+E4 = np.insert(C4[1], [0, 0], 0)
+F4 = np.insert(C4[2], [0], 0)
+G4 = np.array(C4[3])
+H4 = (D4, E4, F4, G4)
+
+B3 = []
+for n in range(1,4):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B3.append(A(n))
+C3 = np.array(B3)
+D3 = np.insert(C3[0], [0, 0], 0)
+E3 = np.insert(C3[1], [0], 0)
+F3 = np.array(C3[2])
+G3 = (D3, E3, F3)
+
+B2 = []
+for n in range(1,3):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B2.append(A(n))
+C2 = np.array(B2)
+D2 = np.insert(C2[0], [0], 0)
+E2 = np.array(C2[1])
+F2 = (D2, E2)
+
+B1 = []
+for n in range(1,2):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B1.append(A(n))
+C1 = np.array(B1)
+E1 = (C1)
+
+# Define the FiMin and FiMax distributions
+FiMin = cp.Uniform(0.20, 0.40)
+distributionFiMin = FiMin.sample(10000, rule="S")
+np.random.shuffle(distributionFiMin)
+FiMax = cp.Uniform(0.80, 1.00)
+distributionFiMax = FiMax.sample(10000, rule="S")
+np.random.shuffle(distributionFiMax)
+
+Rc = pd.DataFrame([])
+for k, row in df7.iterrows():
+    muA = df7['murel']
+    distributionFi = distributionFiMax - muA * (distributionFiMax - distributionFiMin)
+    Rc[k] = pd.DataFrame(distributionFi[k], columns = ['Fi'])
+
+R2003 = pd.DataFrame([])
+R2002 = pd.DataFrame([])
+R2001 = pd.DataFrame([])
+R2000 = pd.DataFrame([])
+R1999 = pd.DataFrame([])
+R1998 = pd.DataFrame([])
+R1997 = pd.DataFrame([])
+R1996 = pd.DataFrame([])
+R1995 = pd.DataFrame([])
+R1994 = pd.DataFrame([])
+R12003 = pd.DataFrame([])
+R12002 = pd.DataFrame([])
+R12001 = pd.DataFrame([])
+R12000 = pd.DataFrame([])
+R11999 = pd.DataFrame([])
+R11998 = pd.DataFrame([])
+R11997 = pd.DataFrame([])
+R11996 = pd.DataFrame([])
+R11995 = pd.DataFrame([])
+R11994 = pd.DataFrame([])
+
+for c in df51:
+    n9 = int(muA[c]*(9-1))+1
+    n8 = int(muA[c]*(8-1))+1
+    n7 = int(muA[c]*(7-1))+1
+    n6 = int(muA[c]*(6-1))+1
+    n5 = int(muA[c]*(5-1))+1
+    n4 = int(muA[c]*(4-1))+1
+    n3 = int(muA[c]*(3-1))+1
+    n2 = int(muA[c]*(2-1))+1
+    Q9 = random.choice(M9[0:n9])
+    Q8 = random.choice(L8[0:n8])
+    Q7 = random.choice(K7[0:n7])
+    Q6 = random.choice(J6[0:n6])
+    Q5 = random.choice(I5[0:n5])
+    Q4 = random.choice(H4[0:n4])
+    Q3 = random.choice(G3[0:n3])
+    Q2 = random.choice(F2[0:n2])
+    R2003[c] = Rc[c]*(df51[c][2003])+df51[c][2004]+df51[c][2005]+df51[c][2006]+df51[c][2007]
+    R2002[c] = Rc[c]*(df51[c][2002])
+    R2001[c] = Rc[c]*(df51[c][2001])
+    R2000[c] = Rc[c]*(df51[c][2000])
+    R1999[c] = Rc[c]*(df51[c][1999])
+    R1998[c] = Rc[c]*(df51[c][1998])
+    R1997[c] = Rc[c]*(df51[c][1997])
+    R1996[c] = Rc[c]*(df51[c][1996])
+    R1995[c] = Rc[c]*(df51[c][1995])
+    R1994[c] = (Rc[c]/Rc[c])*df51[c][1994]
+    R12003[c] = R2003[c]
+    R12002[c] = R2002[c] + (1 - Rc[c]) * df51[c][2003] *  Q9[8]
+    R12001[c] = R2001[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[7] + df51[c][2002] * Q8[7])
+    R12000[c] = R2000[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[6]\
+    + df51[c][2002] * Q8[6] + df51[c][2001] * Q7[6])
+    R11999[c] = R1999[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[5]\
+    + df51[c][2002] * Q8[5] + df51[c][2001] * Q7[5] \
+    + df51[c][2000] * Q6[5])
+    R11998[c] = R1998[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[4]\
+    + df51[c][2002] * Q8[4] + df51[c][2001] * Q7[4] \
+    + df51[c][2000] * Q6[4] + df51[c][1999] * Q5[4])
+    R11997[c] = R1997[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[3]\
+    + df51[c][2002] * Q8[3] + df51[c][2001] * Q7[3] \
+    + df51[c][2000] * Q6[3] + df51[c][1999] * Q5[3] \
+    + df51[c][1998] * Q4[3])
+    R11996[c] = R1996[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[2]\
+    + df51[c][2002] * Q8[2] + df51[c][2001] * Q7[2] \
+    + df51[c][2000] * Q6[2] + df51[c][1999] * Q5[2] \
+    + df51[c][1998] * Q4[2] + df51[c][1997] * Q3[2])
+    R11995[c] = R1995[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[1]\
+    + df51[c][2002] * Q8[1] + df51[c][2001] * Q7[1] \
+    + df51[c][2000] * Q6[1] + df51[c][1999] * Q5[1] \
+    + df51[c][1998] * Q4[1] + df51[c][1997] * Q3[1] \
+    + df51[c][1996] * Q2[1])
+    R11994[c] = R1994[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[0]\
+    + df51[c][2002] * Q8[0] + df51[c][2001] * Q7[0] \
+    + df51[c][2000] * Q6[0] + df51[c][1999] * Q5[0] \
+    + df51[c][1998] * Q4[0] + df51[c][1997] * Q3[0] \
+    + df51[c][1996] * Q2[0] + df51[c][1995])
+
+# Evaluate closure
+Regression = pd.DataFrame.mean(R11994, axis = 0) + pd.DataFrame.mean(R11995, axis = 0) + pd.DataFrame.mean(R11996, axis = 0)+ \
+pd.DataFrame.mean(R11997, axis = 0) + pd.DataFrame.mean(R11998, axis = 0) + pd.DataFrame.mean(R11999, axis = 0) + \
+pd.DataFrame.mean(R12000, axis = 0) + pd.DataFrame.mean(R12001, axis = 0) + pd.DataFrame.mean(R12002, axis = 0) + \
+pd.DataFrame.mean(R12003, axis = 0)
+Closure = pd.DataFrame.sum(df51, axis = 0)
+Diff = (Closure - Regression)*100/Closure
+Diff2 = pd.Series(Diff)
+
+# Mean, Standard Deviation and Standard Error Calculation:
+averageR11994 = np.mean(R11994)
+R21994 = R11994.append(averageR11994, ignore_index = True)
+R31994 = R21994[10000:]
+R31994['year'] = '1994'
+R31994.set_index('year', append=True, inplace=True)
+R31994.reorder_levels(['year', None])
+averageR11995 = np.mean(R11995)
+R21995 = R11995.append(averageR11995, ignore_index = True)
+R31995 = R21995[10000:]
+R31995['year'] = '1995'
+R31995.set_index('year', append=True, inplace=True)
+R31995.reorder_levels(['year', None])
+R95 = pd.concat([R31994.T, R31995.T], axis=1)
+averageR11996 = np.mean(R11996)
+R21996 = R11996.append(averageR11996, ignore_index = True)
+R31996 = R21996[10000:]
+R31996['year'] = '1996'
+R31996.set_index('year', append=True, inplace=True)
+R31996.reorder_levels(['year', None])
+R96 = pd.concat([R95, R31996.T], axis=1)
+averageR11997 = np.mean(R11997)
+R21997 = R11997.append(averageR11997, ignore_index = True)
+R31997 = R21997[10000:]
+R31997['year'] = '1997'
+R31997.set_index('year', append=True, inplace=True)
+R31997.reorder_levels(['year', None])
+R97 = pd.concat([R96, R31997.T], axis=1)
+averageR11998 = np.mean(R11998)
+R21998 = R11998.append(averageR11998, ignore_index = True)
+R31998 = R21998[10000:]
+R31998['year'] = '1998'
+R31998.set_index('year', append=True, inplace=True)
+R31998.reorder_levels(['year', None])
+R98 = pd.concat([R97, R31998.T], axis=1)
+averageR11999 = np.mean(R11998)
+R21999 = R11999.append(averageR11998, ignore_index = True)
+R31999 = R21999[10000:]
+R31999['year'] = '1999'
+R31999.set_index('year', append=True, inplace=True)
+R31999.reorder_levels(['year', None])
+R99 = pd.concat([R98, R31999.T], axis=1)
+averageR12000 = np.mean(R12000)
+R22000 = R12000.append(averageR12000, ignore_index = True)
+R32000 = R22000[10000:]
+R32000['year'] = '2000'
+R32000.set_index('year', append=True, inplace=True)
+R32000.reorder_levels(['year', None])
+R00 = pd.concat([R99, R32000.T], axis=1)
+averageR12001 = np.mean(R12001)
+R22001 = R12001.append(averageR12001, ignore_index = True)
+R32001 = R22001[10000:]
+R32001['year'] = '2001'
+R32001.set_index('year', append=True, inplace=True)
+R32001.reorder_levels(['year', None])
+R01 = pd.concat([R00, R32001.T], axis=1)
+averageR12002 = np.mean(R12002)
+R22002 = R12002.append(averageR12002, ignore_index = True)
+R32002 = R22002[10000:]
+R32002['year'] = '2002'
+R32002.set_index('year', append=True, inplace=True)
+R32002.reorder_levels(['year', None])
+R02 = pd.concat([R01, R32002.T], axis=1)
+averageR12003 = np.mean(R12003)
+R22003 = R12003.append(averageR12003, ignore_index = True)
+R32003 = R22003[10000:]
+R03 = pd.concat([R02, R32003.T], axis=1)
+R32003['year'] = '2003'
+R32003.set_index('year', append=True, inplace=True)
+R32003.reorder_levels(['year', None])
+R03avg = pd.concat([R02, R32003.T], axis=1)
+stdRR1994 = np.std(R11994)
+R41994 = R11994.append(stdRR1994, ignore_index = True)
+R51994 = R41994[10000:]
+R51994['year'] = '1994'
+R51994.set_index('year', append=True, inplace=True)
+R51994.reorder_levels(['year', None])
+stdRR1995 = np.std(R11995)
+R41995 = R11995.append(stdRR1995, ignore_index = True)
+R51995 = R41995[10000:]
+R51995['year'] = '1995'
+R51995.set_index('year', append=True, inplace=True)
+R51995.reorder_levels(['year', None])
+R95d = pd.concat([R51994.T, R51995.T], axis=1)
+stdRR1996 = np.std(R11996)
+R41996 = R11996.append(stdRR1996, ignore_index = True)
+R51996 = R41996[10000:]
+R51996['year'] = '1996'
+R51996.set_index('year', append=True, inplace=True)
+R51996.reorder_levels(['year', None])
+R96d = pd.concat([R95d, R51996.T], axis=1)
+stdRR1997 = np.std(R11997)
+R41997 = R11997.append(stdRR1997, ignore_index = True)
+R51997 = R41997[10000:]
+R51997['year'] = '1997'
+R51997.set_index('year', append=True, inplace=True)
+R51997.reorder_levels(['year', None])
+R97d = pd.concat([R96d, R51997.T], axis=1)
+stdRR1998 = np.std(R11998)
+R41998 = R11998.append(stdRR1998, ignore_index = True)
+R51998 = R41998[10000:]
+R51998['year'] = '1998'
+R51998.set_index('year', append=True, inplace=True)
+R51998.reorder_levels(['year', None])
+R98d = pd.concat([R97d, R51998.T], axis=1)
+stdRR1999 = np.std(R11999)
+R41999 = R11999.append(stdRR1999, ignore_index = True)
+R51999 = R41999[10000:]
+R51999['year'] = '1999'
+R51999.set_index('year', append=True, inplace=True)
+R51999.reorder_levels(['year', None])
+R99d = pd.concat([R98d, R51999.T], axis=1)
+stdRR12000 = np.std(R12000)
+R42000 = R12000.append(stdRR12000, ignore_index = True)
+R52000 = R42000[10000:]
+R52000['year'] = '2000'
+R52000.set_index('year', append=True, inplace=True)
+R52000.reorder_levels(['year', None])
+R00d = pd.concat([R99d, R52000.T], axis=1)
+stdRR12001 = np.std(R12001)
+R42001 = R12001.append(stdRR12001, ignore_index = True)
+R52001 = R42001[10000:]
+R52001['year'] = '2001'
+R52001.set_index('year', append=True, inplace=True)
+R52001.reorder_levels(['year', None])
+R01d = pd.concat([R00d, R52001.T], axis=1)
+stdRR12002 = np.std(R12002)
+R42002 = R12002.append(stdRR12002, ignore_index = True)
+R52002 = R42002[10000:]
+R52002['year'] = '2002'
+R52002.set_index('year', append=True, inplace=True)
+R52002.reorder_levels(['year', None])
+R02d = pd.concat([R01d, R52002.T], axis=1)
+stdRR12003 = np.std(R12003)
+R42003 = R12003.append(stdRR12003, ignore_index = True)
+R52003 = R42003[10000:]
+R52003['year'] = '2003'
+R52003.set_index('year', append=True, inplace=True)
+R52003.reorder_levels(['year', None])
+R03d = pd.concat([R02d, R52003.T], axis=1)
+sErrR11994 = pd.Series(stats.sem(R11994), index = R11994.columns)
+R61994 = R11994.append(sErrR11994, ignore_index = True)
+R71994 = R61994[10000:]
+R71994['year'] = '1994'
+R71994.set_index('year', append=True, inplace=True)
+R71994.reorder_levels(['year', None])
+sErrR11995 = pd.Series(stats.sem(R11995), index = R11995.columns)
+R61995 = R11995.append(sErrR11995, ignore_index = True)
+R71995 = R61995[10000:]
+R71995['year'] = '1995'
+R71995.set_index('year', append=True, inplace=True)
+R71995.reorder_levels(['year', None])
+R95d = pd.concat([R71994.T, R71995.T], axis=1)
+sErrR11996 = pd.Series(stats.sem(R11996), index = R11996.columns)
+R61996 = R11996.append(sErrR11996, ignore_index = True)
+R71996 = R61996[10000:]
+R71996['year'] = '1996'
+R71996.set_index('year', append=True, inplace=True)
+R71996.reorder_levels(['year', None])
+R96d = pd.concat([R95d, R71996.T], axis=1)
+sErrR11997 = pd.Series(stats.sem(R11997), index = R11996.columns)
+R61997 = R11997.append(sErrR11997, ignore_index = True)
+R71997 = R61997[10000:]
+R71997['year'] = '1997'
+R71997.set_index('year', append=True, inplace=True)
+R71997.reorder_levels(['year', None])
+R97d = pd.concat([R96d, R71997.T], axis=1)
+sErrR11998 = pd.Series(stats.sem(R11998), index = R11996.columns)
+R61998 = R11998.append(sErrR11998, ignore_index = True)
+R71998 = R61998[10000:]
+R71998['year'] = '1998'
+R71998.set_index('year', append=True, inplace=True)
+R71998.reorder_levels(['year', None])
+R98d = pd.concat([R97d, R71998.T], axis=1)
+sErrR11999 = pd.Series(stats.sem(R11999), index = R11999.columns)
+R61999 = R11999.append(sErrR11999, ignore_index = True)
+R71999 = R61999[10000:]
+R71999['year'] = '1999'
+R71999.set_index('year', append=True, inplace=True)
+R71999.reorder_levels(['year', None])
+R99d = pd.concat([R98d, R71999.T], axis=1)
+sErrR12000 = pd.Series(stats.sem(R12000), index = R12000.columns)
+R62000 = R12000.append(sErrR12000, ignore_index = True)
+R72000 = R62000[10000:]
+R72000['year'] = '2000'
+R72000.set_index('year', append=True, inplace=True)
+R72000.reorder_levels(['year', None])
+R00d = pd.concat([R99d, R72000.T], axis=1)
+sErrR12001 = pd.Series(stats.sem(R12001), index = R12000.columns)
+R62001 = R12001.append(sErrR12001, ignore_index = True)
+R72001 = R62001[10000:]
+R72001['year'] = '2001'
+R72001.set_index('year', append=True, inplace=True)
+R72001.reorder_levels(['year', None])
+R01d = pd.concat([R00d, R72001.T], axis=1)
+sErrR12002 = pd.Series(stats.sem(R12002), index = R12000.columns)
+R62002 = R12002.append(sErrR12002, ignore_index = True)
+R72002 = R62002[10000:]
+R72002['year'] = '2002'
+R72002.set_index('year', append=True, inplace=True)
+R72002.reorder_levels(['year', None])
+R02s = pd.concat([R01d, R72002.T], axis=1)
+sErrR12003 = pd.Series(stats.sem(R12003), index = R12000.columns)
+R62003 = R12003.append(sErrR12003, ignore_index = True)
+R72003 = R62003[10000:]
+R72003['year'] = '2003'
+R72003.set_index('year', append=True, inplace=True)
+R72003.reorder_levels(['year', None])
+R03s = pd.concat([R02s, R72003.T], axis=1)
+
+# Export the project to an .xls spreadsheet
+writer = pd.ExcelWriter('C:/Users/Samuele/Dropbox/ECGC_Barcelona/1.Projects/01-DG_REGIO/Work/ESGGF1994-1999.xlsx')
+R03avg.to_excel(writer,'expenditures')
+R03d.to_excel(writer,'standard_deviation')
+R03s.to_excel(writer,'standard_error')
+writer.save()

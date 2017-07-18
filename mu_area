@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import chaospy as cp
+import random
+%matplotlib inline
+
+
+df2 = pd.read_excel('Index slope 94-99.xlsx', sheetname='EAGGF94-99', parse_cols = 'CA:CO')
+df2.columns = df2.iloc[2]
+df3 = df2.ix[3:215]
+df4 = df3.set_index('Row Labels')
+
+# mu describes the ideal spending subdivided in equal shares dependent on the year
+mu = pd.DataFrame(index = [1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, \
+2005, 2006, 2007], data = (df4.columns.values-1993)*(df4[2007]['AT11']-df4[1994]['AT11'])/(1999-1993))
+mu = mu.rename(columns={0: 'mu1'})
+df4b = pd.concat([df4, mu.T])
+for i in range (2000,2008):
+    df4b[i]['mu1'] = 1
+
+# This part of the code allows to get the areas of the individual areas and compare them with the ideal reallocation trend 
+df5 = df4b.T
+plt.bar(df5.index+0.5, df5['UKN0'], 1.0, color = 'y', label = 'UKN0')
+plt.bar(df5.index+0.5, df5['ITF3'], 1.0, color = 'r', label = 'ITF3')
+plt.legend()
+plt.xlim(1993,2008)
+plt.xticks([1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, \
+2005, 2006, 2007])
+plt.bar(df5.index+0.5, df5['mu1'], 1.0, alpha = 0.25, color='k', label = 'ideal')
+plt.legend()
+plt.show()
+
+# Get the area difference defining the specificity index 'mu' for the various areas
+for i, row in df4b.iterrows():
+    b = (df4b[1994]-df4b[1994]['mu1'], df4b[1995]-df4b[1995]['mu1'], df4b[1996]-df4b[1996]['mu1'],\
+    df4b[1997]-df4b[1997]['mu1'], df4b[1998]-df4b[1998]['mu1'], df4b[1999]-df4b[1999]['mu1'], \
+    df4b[2000]-df4b[2000]['mu1'], df4b[2001]-df4b[2001]['mu1'], df4b[2002]-df4b[2002]['mu1'],
+    df4b[2003]-df4b[2003]['mu1'], df4b[2004]-df4b[2004]['mu1'], df4b[2005]-df4b[2005]['mu1'],
+    df4b[2006]-df4b[2006]['mu1'], df4b[2007]-df4b[2007]['mu1'])
+    c = sum(b)
+    df4b['muavg']= c
+
+# Compute the relative scale
+df4b['murel']=(max(df4b['muavg'])-df4b['muavg'])/(max(df4b['muavg'])-min(df4b['muavg']))
+df6 = df4b.sort_values(['murel'], ascending = True)
+
+# Scatter plot of the relative values of mu
+plt.scatter(range(len(df6.index)),df6['murel'], c = 'r', label = 'Relative mu')
+plt.legend()
+plt.show()

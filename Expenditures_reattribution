@@ -1,0 +1,268 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import chaospy as cp
+import random
+%matplotlib inline
+
+df1 = pd.read_excel('Database_Final.xlsx')
+
+# Select a given funding scheme
+Slice = df1.ix[:,0:6]
+
+# Select a given programming period
+Program = Slice.loc[Slice['ProgrammingPeriod'] == '2000-2006']
+del Program['Country']
+del Program['NUTS1Code']
+del Program['ProgrammingPeriod']
+Program
+
+#Separate the information for the single NUTS2 areas
+Program2 = Program.groupby('NUTS2Code').apply(lambda x: list(x.ERDF_TOTAL))
+
+#Put again together a table with the data
+Program3 = pd.DataFrame(Program2, columns = ['Year'])
+Program3['Year'].apply(lambda x : pd.Series([x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10]\
+, x[11], x[12], x[13], x[14], x[15]]))
+Program3[[2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015]] =\
+Program3['Year'].apply(lambda x : pd.Series([x[0], x[1], x[2], x[3], x[4],\
+x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]]))
+del Program3['Year']
+Program4 = Program3.T
+Program4['Year'] = Program4.index
+
+df = pd.read_excel('Slope.xlsx', "mu ERDF")
+df = pd.read_excel('Slope.xlsx', "mu ERDF")
+Slice = df.ix[:,9:12]
+Slice1 = Slice[2:251]
+Slice1.rename(columns={'Unnamed: 9': 'NUTS2', 'Unnamed: 10': 'Region', 'Unnamed: 11': 'mu'}, inplace=True)
+
+# Taken ITF6 as example
+mu = Slice1['mu'][125]
+
+# Define the FiMin and FiMax distributions
+FiMin = cp.Uniform(0.20, 0.40)
+distributionFiMin = FiMin.sample(10000, rule="S")
+np.random.shuffle(distributionFiMin)
+FiMax = cp.Uniform(0.80, 1.00)
+distributionFiMax = FiMax.sample(10000, rule="S")
+np.random.shuffle(distributionFiMax)
+distributionFi = mu * distributionFiMin + distributionFiMax - distributionFiMin
+
+# Define the residues A
+B9 = []
+for n in range(1,10):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B9.append(A(n))
+C9 = np.array(B9)
+D9 = np.insert(C9[0], [0, 0, 0, 0, 0, 0, 0, 0], 0)
+E9 = np.insert(C9[1], [0, 0, 0, 0, 0, 0, 0], 0)
+F9 = np.insert(C9[2], [0, 0, 0, 0, 0, 0], 0)
+G9 = np.insert(C9[3], [0, 0, 0, 0, 0], 0)
+H9 = np.insert(C9[4], [0, 0, 0, 0], 0)
+I9 = np.insert(C9[5], [0, 0, 0], 0)
+J9 = np.insert(C9[6], [0, 0], 0)
+K9 = np.insert(C9[7], [0], 0)
+L9 = np.array(C9[8])
+M9 = (D9, E9, F9, G9, H9, I9, J9, K9, L9)
+
+B8 = []
+for n in range(1,9):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B8.append(A(n))
+C8 = np.array(B8)
+D8 = np.insert(C8[0], [0, 0, 0, 0, 0, 0, 0], 0)
+E8 = np.insert(C8[1], [0, 0, 0, 0, 0, 0], 0)
+F8 = np.insert(C8[2], [0, 0, 0, 0, 0], 0)
+G8 = np.insert(C8[3], [0, 0, 0, 0], 0)
+H8 = np.insert(C8[4], [0, 0, 0], 0)
+I8 = np.insert(C8[5], [0, 0], 0)
+J8 = np.insert(C8[6], [0], 0)
+K8 = np.array(C8[7])
+L8 = (D8, E8, F8, G8, H8, I8, J8, K8)
+Q8 = random.choice(L8)
+
+B7 = []
+for n in range(1,8):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B7.append(A(n))
+C7 = np.array(B7)
+D7 = np.insert(C7[0], [0, 0, 0, 0, 0, 0], 0)
+E7 = np.insert(C7[1], [0, 0, 0, 0, 0], 0)
+F7 = np.insert(C7[2], [0, 0, 0, 0], 0)
+G7 = np.insert(C7[3], [0, 0, 0], 0)
+H7 = np.insert(C7[4], [0, 0], 0)
+I7 = np.insert(C7[5], [0], 0)
+J7 = np.array(C7[6])
+K7 = (D7, E7, F7, G7, H7, I7, J7)
+Q7 = random.choice(K7)
+
+B6 = []
+for n in range(1,7):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B6.append(A(n))
+C6 = np.array(B6)
+D6 = np.insert(C6[0], [0, 0, 0, 0, 0], 0)
+E6 = np.insert(C6[1], [0, 0, 0, 0], 0)
+F6 = np.insert(C6[2], [0, 0, 0], 0)
+G6 = np.insert(C6[3], [0, 0], 0)
+H6 = np.insert(C6[4], [0], 0)
+I6 = np.array(C6[5])
+J6 = (D6, E6, F6, G6, H6, I6)
+Q6 = random.choice(J6)
+
+B5 = []
+for n in range(1,6):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B5.append(A(n))
+C5 = np.array(B5)
+D5 = np.insert(C5[0], [0, 0, 0, 0], 0)
+E5 = np.insert(C5[1], [0, 0, 0], 0)
+F5 = np.insert(C5[2], [0, 0], 0)
+G5 = np.insert(C5[3], [0], 0)
+H5 = np.array(C5[4])
+I5 = (D5, E5, F5, G5, H5)
+Q5 = random.choice(I5)
+
+B4 = []
+for n in range(1,5):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B4.append(A(n))
+C4 = np.array(B4)
+D4 = np.insert(C4[0], [0, 0, 0], 0)
+E4 = np.insert(C4[1], [0, 0], 0)
+F4 = np.insert(C4[2], [0], 0)
+G4 = np.array(C4[3])
+H4 = (D4, E4, F4, G4)
+Q4 = random.choice(H4)
+
+B3 = []
+for n in range(1,4):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B3.append(A(n))
+C3 = np.array(B3)
+D3 = np.insert(C3[0], [0, 0], 0)
+E3 = np.insert(C3[1], [0], 0)
+F3 = np.array(C3[2])
+G3 = (D3, E3, F3)
+Q3 = random.choice(G3)
+
+B2 = []
+for n in range(1,3):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B2.append(A(n))
+C2 = np.array(B2)
+D2 = np.insert(C2[0], [0], 0)
+E2 = np.array(C2[1])
+F2 = (D2, E2)
+Q2 = random.choice(F2)
+
+B1 = []
+for n in range(1,2):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B1.append(A(n))
+C1 = np.array(B1)
+E1 = (C1)
+Q1 = random.choice(E1)
+
+R = pd.DataFrame(distributionFi, columns = ['Fi'])
+R[2009] = R['Fi']* (Program4['ITF6'][2009]+Program4['ITF6'][2010]+Program4['ITF6'][2011]+Program4['ITF6'][2012]+\
+Program4['ITF6'][2013]+Program4['ITF6'][2014]+Program4['ITF6'][2015])
+R[2008] = R['Fi']* Program4['ITF6'][2008] 
+R[2007] = R['Fi']* Program4['ITF6'][2007]
+R[2006] = R['Fi']* Program4['ITF6'][2006]
+R[2005] = R['Fi']* Program4['ITF6'][2005]
+R[2004] = R['Fi']* Program4['ITF6'][2004]
+R[2003] = R['Fi']* Program4['ITF6'][2003]
+R[2002] = R['Fi']* Program4['ITF6'][2002]
+R[2001] = R['Fi']* Program4['ITF6'][2001]
+R[2000] = Program4['ITF6'][2000]
+R1 = R.copy()
+R1[2009] = R[2009]
+for i in R1.index:
+    n9 = int(mu*(9-1))+1
+    n8 = int(mu*(8-1))+1
+    n7 = int(mu*(7-1))+1
+    n6 = int(mu*(6-1))+1
+    n5 = int(mu*(5-1))+1
+    n4 = int(mu*(4-1))+1
+    n3 = int(mu*(3-1))+1
+    n2 = int(mu*(2-1))+1
+    Q9 = random.choice(M9)
+    Q8 = random.choice(L8)
+    Q7 = random.choice(K7)
+    Q6 = random.choice(J6)
+    Q5 = random.choice(I5)
+    Q4 = random.choice(H4)
+    Q3 = random.choice(G3)
+    Q2 = random.choice(F2)
+    R1.ix[i][2008] = R[2008][i] + (1 - R1['Fi'][i]) * Program4['ITF6'][2009] *  Q9[8]
+    R1.ix[i][2007] = R[2007][i] + (1 - R1['Fi'][i]) * (Program4['ITF6'][2009] *  Q9[7]\
+    + Program4['ITF6'][2008] * Q8[7])
+    R1.ix[i][2006] = R[2006][i] + (1 - R1['Fi'][i]) * (Program4['ITF6'][2009] *  Q9[6]\
+    + Program4['ITF6'][2008] * Q8[6] + Program4['ITF6'][2007] * Q7[6])
+    R1.ix[i][2005] = R[2005][i] + (1 - R1['Fi'][i]) * (Program4['ITF6'][2009] *  Q9[5]\
+    + Program4['ITF6'][2008] * Q8[5] + Program4['ITF6'][2007] * Q7[5] \
+    + Program4['ITF6'][2006] * Q6[5])
+    R1.ix[i][2004] = R[2004][i] + (1 - R1['Fi'][i]) * (Program4['ITF6'][2009] *  Q9[4]\
+    + Program4['ITF6'][2008] * Q8[4] + Program4['ITF6'][2007] * Q7[4] \
+    + Program4['ITF6'][2006] * Q6[4] + Program4['ITF6'][2005] * Q5[4])
+    R1.ix[i][2003] = R[2003][i] + (1 - R1['Fi'][i]) * (Program4['ITF6'][2009] *  Q9[3]\
+    + Program4['ITF6'][2008] * Q8[3] + Program4['ITF6'][2007] * Q7[3] \
+    + Program4['ITF6'][2006] * Q6[3] + Program4['ITF6'][2005] * Q5[3] \
+    + Program4['ITF6'][2004] * Q4[3])
+    R1.ix[i][2002] = R[2002][i] + (1 - R1['Fi'][i]) * (Program4['ITF6'][2009] *  Q9[2]\
+    + Program4['ITF6'][2008] * Q8[2] + Program4['ITF6'][2007] * Q7[2] \
+    + Program4['ITF6'][2006] * Q6[2] + Program4['ITF6'][2005] * Q5[2] \
+    + Program4['ITF6'][2004] * Q4[2] + Program4['ITF6'][2003] * Q3[2])
+    R1.ix[i][2001] = R[2001][i] + (1 - R1['Fi'][i]) * (Program4['ITF6'][2009] *  Q9[1]\
+    + Program4['ITF6'][2008] * Q8[1] + Program4['ITF6'][2007] * Q7[1] \
+    + Program4['ITF6'][2006] * Q6[1] + Program4['ITF6'][2005] * Q5[1] \
+    + Program4['ITF6'][2004] * Q4[1] + Program4['ITF6'][2003] * Q3[1] \
+    + Program4['ITF6'][2002] * Q2[1])
+    R1.ix[i][2000] = R[2000][i] + (1 - R1['Fi'][i]) * (Program4['ITF6'][2009] *  Q9[0]\
+    + Program4['ITF6'][2008] * Q8[0] + Program4['ITF6'][2007] * Q7[0] \
+    + Program4['ITF6'][2006] * Q6[0] + Program4['ITF6'][2005] * Q5[0] \
+    + Program4['ITF6'][2004] * Q4[0] + Program4['ITF6'][2003] * Q3[0] \
+    + Program4['ITF6'][2002] * Q2[0] + Program4['ITF6'][2001])
+
+# Evaluate closure
+Regression = sum(pd.DataFrame.mean(R1, axis = 0))
+Closure = sum(Program4['ITF6'])
+Diff = (Closure - Regression)/Closure
+
+# Plot of the trends vs. expenditures
+R1['y2000']=np.repeat(2000,10000)
+R1['y2001']=np.repeat(2001,10000)
+R1['y2002']=np.repeat(2002,10000)
+R1['y2003']=np.repeat(2003,10000)
+R1['y2004']=np.repeat(2004,10000)
+R1['y2005']=np.repeat(2005,10000)
+R1['y2006']=np.repeat(2006,10000)
+R1['y2007']=np.repeat(2007,10000)
+R1['y2008']=np.repeat(2008,10000)
+R1['y2009']=np.repeat(2009,10000)
+Program4['NUTS2Code'] = Program4.index
+plt.plot(R1['y2000'], R1[2000], c = 'b', label = 'expenditures')
+plt.plot(R1['y2001'], R1[2001], c = 'b', label = '')
+plt.plot(R1['y2002'], R1[2002], c = 'b', label = '')
+plt.plot(R1['y2003'], R1[2003], c = 'b', label = '')
+plt.plot(R1['y2004'], R1[2004], c = 'b', label = '')
+plt.plot(R1['y2005'], R1[2005], c = 'b', label = '')
+plt.plot(R1['y2006'], R1[2006], c = 'b', label = '')
+plt.plot(R1['y2007'], R1[2007], c = 'b', label = '')
+plt.plot(R1['y2008'], R1[2008], c = 'b', label = '')
+plt.plot(R1['y2009'], R1[2009], c = 'b', label = '')
+plt.plot(Program4['NUTS2Code'], Program4['ITF6'], c = 'r', label = 'payments')
+plt.suptitle('NUTS2: ITF6 (Calabria), Fund: EFR_TOTAL, Programming Period: 2000-2006', fontsize=14, fontweight='bold')
+plt.legend()
+plt.show()

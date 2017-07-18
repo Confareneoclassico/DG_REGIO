@@ -1,0 +1,438 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import chaospy as cp
+import random
+from scipy import stats
+%matplotlib inline
+
+df2 = pd.read_excel('C:/Users/Samuele/Dropbox/ECGC_Barcelona/1.Projects/01-DG_REGIO/Work/Index slope 07-13.xlsx', sheetname='ERDF07-13', parse_cols = 'BL:BU')
+df2.columns = df2.iloc[2]
+df3 = df2.iloc[3:275]
+df4 = df3.set_index('Row Labels')
+mu = pd.DataFrame(index = [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015], \
+data = (df4.columns.values-2006)*(df4[2015]['AT11']-0)/(2015-2006))
+mu = mu.rename(columns={0: 'mu1'})
+df4b = pd.concat([df4, mu.T])
+
+for i, row in df4b.iterrows():
+    b = (df4b[2007]-df4b[2007]['mu1'], df4b[2008]-df4b[2008]['mu1'], df4b[2009]-df4b[2009]['mu1'],\
+    df4b[2010]-df4b[2010]['mu1'], df4b[2011]-df4b[2011]['mu1'], df4b[2012]-df4b[2012]['mu1'], \
+    df4b[2013]-df4b[2013]['mu1'], df4b[2014]-df4b[2014]['mu1'], df4b[2015]-df4b[2015]['mu1'])
+    c = sum(b)
+    df4b['muavg']= c
+    
+# Compute the relative scale
+df4b['murel']=(max(df4b['muavg'])-df4b['muavg'])/(max(df4b['muavg'])-min(df4b['muavg']))
+df6 = df4b.sort_values(['murel'], ascending = True)
+df7 = df6.drop('mu1')
+
+# Prepare for the expenditure allocations
+df21 = pd.read_excel('C:/Users/Samuele/Dropbox/ECGC_Barcelona/1.Projects/01-DG_REGIO/Work/Index slope 07-13.xlsx',\
+sheetname='ERDF07-13', parse_cols = 'H:Q', skiprows =4)
+df21.head()
+df31 = df21.set_index('Row Labels')
+df41 = df31.iloc[0:272]
+df51 = df41.T.fillna(0)
+
+# Define the residues A
+B9 = []
+for n in range(1,10):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B9.append(A(n))
+C9 = np.array(B9)
+D9 = np.insert(C9[0], [0, 0, 0, 0, 0, 0, 0, 0], 0)
+E9 = np.insert(C9[1], [0, 0, 0, 0, 0, 0, 0], 0)
+F9 = np.insert(C9[2], [0, 0, 0, 0, 0, 0], 0)
+G9 = np.insert(C9[3], [0, 0, 0, 0, 0], 0)
+H9 = np.insert(C9[4], [0, 0, 0, 0], 0)
+I9 = np.insert(C9[5], [0, 0, 0], 0)
+J9 = np.insert(C9[6], [0, 0], 0)
+K9 = np.insert(C9[7], [0], 0)
+L9 = np.array(C9[8])
+M9 = (D9, E9, F9, G9, H9, I9, J9, K9, L9)
+
+B8 = []
+for n in range(1,9):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B8.append(A(n))
+C8 = np.array(B8)
+D8 = np.insert(C8[0], [0, 0, 0, 0, 0, 0, 0], 0)
+E8 = np.insert(C8[1], [0, 0, 0, 0, 0, 0], 0)
+F8 = np.insert(C8[2], [0, 0, 0, 0, 0], 0)
+G8 = np.insert(C8[3], [0, 0, 0, 0], 0)
+H8 = np.insert(C8[4], [0, 0, 0], 0)
+I8 = np.insert(C8[5], [0, 0], 0)
+J8 = np.insert(C8[6], [0], 0)
+K8 = np.array(C8[7])
+L8 = (D8, E8, F8, G8, H8, I8, J8, K8)
+
+B7 = []
+for n in range(1,8):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B7.append(A(n))
+C7 = np.array(B7)
+D7 = np.insert(C7[0], [0, 0, 0, 0, 0, 0], 0)
+E7 = np.insert(C7[1], [0, 0, 0, 0, 0], 0)
+F7 = np.insert(C7[2], [0, 0, 0, 0], 0)
+G7 = np.insert(C7[3], [0, 0, 0], 0)
+H7 = np.insert(C7[4], [0, 0], 0)
+I7 = np.insert(C7[5], [0], 0)
+J7 = np.array(C7[6])
+K7 = (D7, E7, F7, G7, H7, I7, J7)
+
+B6 = []
+for n in range(1,7):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B6.append(A(n))
+C6 = np.array(B6)
+D6 = np.insert(C6[0], [0, 0, 0, 0, 0], 0)
+E6 = np.insert(C6[1], [0, 0, 0, 0], 0)
+F6 = np.insert(C6[2], [0, 0, 0], 0)
+G6 = np.insert(C6[3], [0, 0], 0)
+H6 = np.insert(C6[4], [0], 0)
+I6 = np.array(C6[5])
+J6 = (D6, E6, F6, G6, H6, I6)
+
+B5 = []
+for n in range(1,6):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B5.append(A(n))
+C5 = np.array(B5)
+D5 = np.insert(C5[0], [0, 0, 0, 0], 0)
+E5 = np.insert(C5[1], [0, 0, 0], 0)
+F5 = np.insert(C5[2], [0, 0], 0)
+G5 = np.insert(C5[3], [0], 0)
+H5 = np.array(C5[4])
+I5 = (D5, E5, F5, G5, H5)
+
+B4 = []
+for n in range(1,5):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B4.append(A(n))
+C4 = np.array(B4)
+D4 = np.insert(C4[0], [0, 0, 0], 0)
+E4 = np.insert(C4[1], [0, 0], 0)
+F4 = np.insert(C4[2], [0], 0)
+G4 = np.array(C4[3])
+H4 = (D4, E4, F4, G4)
+
+B3 = []
+for n in range(1,4):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B3.append(A(n))
+C3 = np.array(B3)
+D3 = np.insert(C3[0], [0, 0], 0)
+E3 = np.insert(C3[1], [0], 0)
+F3 = np.array(C3[2])
+G3 = (D3, E3, F3)
+
+B2 = []
+for n in range(1,3):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B2.append(A(n))
+C2 = np.array(B2)
+D2 = np.insert(C2[0], [0], 0)
+E2 = np.array(C2[1])
+F2 = (D2, E2)
+
+B1 = []
+for n in range(1,2):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B1.append(A(n))
+C1 = np.array(B1)
+E1 = (C1)
+
+# Define the FiMin and FiMax distributions
+FiMin = cp.Uniform(0.20, 0.40)
+distributionFiMin = FiMin.sample(10000, rule="S")
+np.random.shuffle(distributionFiMin)
+FiMax = cp.Uniform(0.80, 1.00)
+distributionFiMax = FiMax.sample(10000, rule="S")
+np.random.shuffle(distributionFiMax)
+
+# Define the FiMinB and FiMaxB distributions
+FiMinB = cp.Uniform(0.20, 0.40)
+distributionFiMinB = FiMinB.sample(10000, rule="S")
+np.random.shuffle(distributionFiMinB)
+FiMaxB = cp.Uniform(0.80, 1.00)
+distributionFiMaxB = FiMaxB.sample(10000, rule="S")
+np.random.shuffle(distributionFiMaxB)
+distributionFiAB2 = distributionFiMaxB - muA * (distributionFiMaxB - distributionFiMin)
+distributionFiAB1 = distributionFiMax - muA * (distributionFiMax - distributionFiMinB)
+
+Rc = pd.DataFrame([])
+RcMax = pd.DataFrame([])
+Rcmin = pd.DataFrame([])
+for k, row in df7.iterrows():
+    muA = df7['murel']
+    distributionFi = distributionFiMax - muA * (distributionFiMax - distributionFiMin)
+    distributionFiAB2 = distributionFiMaxB - muA * (distributionFiMaxB - distributionFiMin)
+    distributionFiAB1 = distributionFiMax - muA * (distributionFiMax - distributionFiMinB)
+    Rc[k] = pd.DataFrame(distributionFi[k], columns = ['Fi'])
+    RcMax[k] = pd.DataFrame(distributionFiAB2[k], columns = ['Fi'])
+    Rcmin[k] = pd.DataFrame(distributionFiAB1[k], columns = ['Fi'])
+    
+R2015 = pd.DataFrame([])
+R2014 = pd.DataFrame([])
+R2013 = pd.DataFrame([])
+R2012 = pd.DataFrame([])
+R2011 = pd.DataFrame([])
+R2010 = pd.DataFrame([])
+R2009 = pd.DataFrame([])
+R2008 = pd.DataFrame([])
+R2007 = pd.DataFrame([])
+RAB22015 = pd.DataFrame([])
+RAB22014 = pd.DataFrame([])
+RAB22013 = pd.DataFrame([])
+RAB22012 = pd.DataFrame([])
+RAB22011 = pd.DataFrame([])
+RAB22010 = pd.DataFrame([])
+RAB22009 = pd.DataFrame([])
+RAB22008 = pd.DataFrame([])
+RAB22007 = pd.DataFrame([])
+RAB12015 = pd.DataFrame([])
+RAB12014 = pd.DataFrame([])
+RAB12013 = pd.DataFrame([])
+RAB12012 = pd.DataFrame([])
+RAB12011 = pd.DataFrame([])
+RAB12010 = pd.DataFrame([])
+RAB12009 = pd.DataFrame([])
+RAB12008 = pd.DataFrame([])
+RAB12007 = pd.DataFrame([])
+R12015 = pd.DataFrame([])
+R12014 = pd.DataFrame([])
+R12013 = pd.DataFrame([])
+R12012 = pd.DataFrame([])
+R12011 = pd.DataFrame([])
+R12010 = pd.DataFrame([])
+R12009 = pd.DataFrame([])
+R12008 = pd.DataFrame([])
+R12007 = pd.DataFrame([])
+R11994 = pd.DataFrame([])
+R1AB22015 = pd.DataFrame([])
+R1AB22014 = pd.DataFrame([])
+R1AB22013 = pd.DataFrame([])
+R1AB22012 = pd.DataFrame([])
+R1AB22011 = pd.DataFrame([])
+R1AB22010 = pd.DataFrame([])
+R1AB22009 = pd.DataFrame([])
+R1AB22008 = pd.DataFrame([])
+R1AB22007 = pd.DataFrame([])
+R1AB12015 = pd.DataFrame([])
+R1AB12014 = pd.DataFrame([])
+R1AB12013 = pd.DataFrame([])
+R1AB12012 = pd.DataFrame([])
+R1AB12011 = pd.DataFrame([])
+R1AB12010 = pd.DataFrame([])
+R1AB12009 = pd.DataFrame([])
+R1AB12008 = pd.DataFrame([])
+R1AB12007 = pd.DataFrame([])
+
+for c in df51:
+    n8 = int(muA[c]*(8-1))+1
+    n7 = int(muA[c]*(7-1))+1
+    n6 = int(muA[c]*(6-1))+1
+    n5 = int(muA[c]*(5-1))+1
+    n4 = int(muA[c]*(4-1))+1
+    n3 = int(muA[c]*(3-1))+1
+    n2 = int(muA[c]*(2-1))+1
+    Q8 = random.choice(L8[0:n8])
+    Q7 = random.choice(K7[0:n7])
+    Q6 = random.choice(J6[0:n6])
+    Q5 = random.choice(I5[0:n5])
+    Q4 = random.choice(H4[0:n4])
+    Q3 = random.choice(G3[0:n3])
+    Q2 = random.choice(F2[0:n2])
+    R2015[c] = Rc[c]*(df51[c][2015])
+    R2014[c] = Rc[c]*(df51[c][2014])
+    R2013[c] = Rc[c]*(df51[c][2013])
+    R2012[c] = Rc[c]*(df51[c][2012])
+    R2011[c] = Rc[c]*(df51[c][2011])
+    R2010[c] = Rc[c]*(df51[c][2010])
+    R2009[c] = Rc[c]*(df51[c][2009])
+    R2008[c] = Rc[c]*(df51[c][2008])
+    R2007[c] = (Rc[c]/Rc[c])*df51[c][2007]
+    RAB22015[c] = RcMax[c]*(df51[c][2015])
+    RAB22014[c] = RcMax[c]*(df51[c][2014])
+    RAB22013[c] = RcMax[c]*(df51[c][2013])
+    RAB22012[c] = RcMax[c]*(df51[c][2012])
+    RAB22011[c] = RcMax[c]*(df51[c][2011])
+    RAB22010[c] = RcMax[c]*(df51[c][2010])
+    RAB22009[c] = RcMax[c]*(df51[c][2009])
+    RAB22008[c] = RcMax[c]*(df51[c][2008])
+    RAB22007[c] = (RcMax[c]/RcMax[c])*df51[c][2007]
+    RAB12015[c] = Rcmin[c]*(df51[c][2015])
+    RAB12014[c] = Rcmin[c]*(df51[c][2014])
+    RAB12013[c] = Rcmin[c]*(df51[c][2013])
+    RAB12012[c] = Rcmin[c]*(df51[c][2012])
+    RAB12011[c] = Rcmin[c]*(df51[c][2011])
+    RAB12010[c] = Rcmin[c]*(df51[c][2010])
+    RAB12009[c] = Rcmin[c]*(df51[c][2009])
+    RAB12008[c] = Rcmin[c]*(df51[c][2008])
+    RAB12007[c] = (Rcmin[c]/Rcmin[c])*df51[c][2007]
+    R12015[c] = R2015[c]
+    R12014[c] = R2014[c] + (1 - Rc[c]) * (df51[c][2015] * Q8[7])
+    R12013[c] = R2013[c] + (1 - Rc[c]) * (df51[c][2015] * Q8[6] + df51[c][2014] * Q7[6])
+    R12012[c] = R2012[c] + (1 - Rc[c]) * (df51[c][2015] * Q8[5] + df51[c][2014] * Q7[5] \
+    + df51[c][2013] * Q6[5])
+    R12011[c] = R2011[c] + (1 - Rc[c]) * (df51[c][2015] * Q8[4] + df51[c][2014] * Q7[4] \
+    + df51[c][2013] * Q6[4] + df51[c][2012] * Q5[4])
+    R12010[c] = R2010[c] + (1 - Rc[c]) * (df51[c][2015] * Q8[3] + df51[c][2014] * Q7[3] \
+    + df51[c][2013] * Q6[3] + df51[c][2012] * Q5[3] \
+    + df51[c][2011] * Q4[3])
+    R12009[c] = R2009[c] + (1 - Rc[c]) * (df51[c][2015] * Q8[2] + df51[c][2014] * Q7[2] \
+    + df51[c][2013] * Q6[2] + df51[c][2012] * Q5[2] \
+    + df51[c][2011] * Q4[2] + df51[c][2010] * Q3[2])
+    R12008[c] = R2008[c] + (1 - Rc[c]) * (df51[c][2015] * Q8[1] + df51[c][2014] * Q7[1] \
+    + df51[c][2013] * Q6[1] + df51[c][2012] * Q5[1] \
+    + df51[c][2011] * Q4[1] + df51[c][2010] * Q3[1] \
+    + df51[c][2009] * Q2[1])
+    R12007[c] = R2007[c] + (1 - Rc[c]) * (df51[c][2015] * Q8[0] + df51[c][2014] * Q7[0] \
+    + df51[c][2013] * Q6[0] + df51[c][2012] * Q5[0] \
+    + df51[c][2011] * Q4[0] + df51[c][2010] * Q3[0] \
+    + df51[c][2009] * Q2[0] + df51[c][2008])
+    R1AB22015[c] = RAB22015[c]
+    R1AB22014[c] = RAB22014[c] + (1 - RcMax[c]) * (df51[c][2015] * Q8[7])
+    R1AB22013[c] = RAB22013[c] + (1 - RcMax[c]) * (df51[c][2015] * Q8[6] + df51[c][2014] * Q7[6])
+    R1AB22012[c] = RAB22012[c] + (1 - RcMax[c]) * (df51[c][2015] * Q8[5] + df51[c][2014] * Q7[5] \
+    + df51[c][2013] * Q6[5])
+    R1AB22011[c] = RAB22011[c] + (1 - RcMax[c]) * (df51[c][2015] * Q8[4] + df51[c][2014] * Q7[4] \
+    + df51[c][2013] * Q6[4] + df51[c][2012] * Q5[4])
+    R1AB22010[c] = RAB22010[c] + (1 - RcMax[c]) * (df51[c][2015] * Q8[3] + df51[c][2014] * Q7[3] \
+    + df51[c][2013] * Q6[3] + df51[c][2012] * Q5[3] \
+    + df51[c][2011] * Q4[3])
+    R1AB22009[c] = RAB22009[c] + (1 - RcMax[c]) * (df51[c][2015] * Q8[2] + df51[c][2014] * Q7[2] \
+    + df51[c][2013] * Q6[2] + df51[c][2012] * Q5[2] \
+    + df51[c][2011] * Q4[2] + df51[c][2010] * Q3[2])
+    R1AB22008[c] = RAB22008[c] + (1 - RcMax[c]) * (df51[c][2015] * Q8[1] + df51[c][2014] * Q7[1] \
+    + df51[c][2013] * Q6[1] + df51[c][2012] * Q5[1] \
+    + df51[c][2011] * Q4[1] + df51[c][2010] * Q3[1] \
+    + df51[c][2009] * Q2[1])
+    R1AB22007[c] = RAB22007[c] + (1 - RcMax[c]) * (df51[c][2015] * Q8[0] + df51[c][2014] * Q7[0] \
+    + df51[c][2013] * Q6[0] + df51[c][2012] * Q5[0] \
+    + df51[c][2011] * Q4[0] + df51[c][2010] * Q3[0] \
+    + df51[c][2009] * Q2[0] + df51[c][2008])
+    R1AB12015[c] = RAB12015[c]
+    R1AB12014[c] = RAB12014[c] + (1 - Rcmin[c]) * (df51[c][2015] * Q8[7])
+    R1AB12013[c] = RAB12013[c] + (1 - Rcmin[c]) * (df51[c][2015] * Q8[6] + df51[c][2014] * Q7[6])
+    R1AB12012[c] = RAB12012[c] + (1 - Rcmin[c]) * (df51[c][2015] * Q8[5] + df51[c][2014] * Q7[5] \
+    + df51[c][2013] * Q6[5])
+    R1AB12011[c] = RAB12011[c] + (1 - Rcmin[c]) * (df51[c][2015] * Q8[4] + df51[c][2014] * Q7[4] \
+    + df51[c][2013] * Q6[4] + df51[c][2012] * Q5[4])
+    R1AB12010[c] = RAB12010[c] + (1 - Rcmin[c]) * (df51[c][2015] * Q8[3] + df51[c][2014] * Q7[3] \
+    + df51[c][2013] * Q6[3] + df51[c][2012] * Q5[3] \
+    + df51[c][2011] * Q4[3])
+    R1AB12009[c] = RAB12009[c] + (1 - Rcmin[c]) * (df51[c][2015] * Q8[2] + df51[c][2014] * Q7[2] \
+    + df51[c][2013] * Q6[2] + df51[c][2012] * Q5[2] \
+    + df51[c][2011] * Q4[2] + df51[c][2010] * Q3[2])
+    R1AB12008[c] = RAB12008[c] + (1 - Rcmin[c]) * (df51[c][2015] * Q8[1] + df51[c][2014] * Q7[1] \
+    + df51[c][2013] * Q6[1] + df51[c][2012] * Q5[1] \
+    + df51[c][2011] * Q4[1] + df51[c][2010] * Q3[1] \
+    + df51[c][2009] * Q2[1])
+    R1AB12007[c] = RAB12007[c] + (1 - Rcmin[c]) * (df51[c][2015] * Q8[0] + df51[c][2014] * Q7[0] \
+    + df51[c][2013] * Q6[0] + df51[c][2012] * Q5[0] \
+    + df51[c][2011] * Q4[0] + df51[c][2010] * Q3[0] \
+    + df51[c][2009] * Q2[0] + df51[c][2008])
+    
+# Sensitivity coefficient computation
+varianceR12007 = np.mean(R12007**2)-np.mean(R12007)**2
+varianceR12008 = np.mean(R12008**2)-np.mean(R12008)**2
+varianceR12009 = np.mean(R12009**2)-np.mean(R12009)**2
+varianceR12010 = np.mean(R12010**2)-np.mean(R12010)**2
+varianceR12011 = np.mean(R12011**2)-np.mean(R12011)**2
+varianceR12012 = np.mean(R12012**2)-np.mean(R12012)**2
+varianceR12013 = np.mean(R12013**2)-np.mean(R12013)**2
+varianceR12014 = np.mean(R12014**2)-np.mean(R12014)**2
+varianceR12015 = np.mean(R12015**2)-np.mean(R12015)**2
+
+RSfimin2007 = R12007.multiply(R1AB12007, axis = 0)
+RSfimax2007 = R12007.multiply(R1AB22007, axis = 0)
+STfimin2007 = (RSfimin2007.sum(axis = 0)/10000 - np.mean(R12007)**2)/varianceR12007
+STfimax2007 = (RSfimax2007.sum(axis = 0)/10000 - np.mean(R12007)**2)/varianceR12007
+RSfimin2008 = R12008.multiply(R1AB12008, axis = 0)
+RSfimax2008 = R12008.multiply(R1AB22008, axis = 0)
+STfimin2008 = (RSfimin2008.sum(axis = 0)/10000 - np.mean(R12008)**2)/varianceR12008
+STfimax2008 = (RSfimax2008.sum(axis = 0)/10000 - np.mean(R12008)**2)/varianceR12008
+RSfimin2009 = R12009.multiply(R1AB12009, axis = 0)
+RSfimax2009 = R12009.multiply(R1AB22009, axis = 0)
+STfimin2009 = (RSfimin2009.sum(axis = 0)/10000 - np.mean(R12009)**2)/varianceR12009
+STfimax2009 = (RSfimax2009.sum(axis = 0)/10000 - np.mean(R12009)**2)/varianceR12009
+RSfimin2010 = R12010.multiply(R1AB12010, axis = 0)
+RSfimax2010 = R12010.multiply(R1AB22010, axis = 0)
+STfimin2010 = (RSfimin2010.sum(axis = 0)/10000 - np.mean(R12010)**2)/varianceR12010
+STfimax2010 = (RSfimax2010.sum(axis = 0)/10000 - np.mean(R12010)**2)/varianceR12010
+RSfimin2011 = R12011.multiply(R1AB12011, axis = 0)
+RSfimax2011 = R12011.multiply(R1AB22011, axis = 0)
+STfimin2011 = (RSfimin2011.sum(axis = 0)/10000 - np.mean(R12011)**2)/varianceR12011
+STfimax2011 = (RSfimax2011.sum(axis = 0)/10000 - np.mean(R12011)**2)/varianceR12011
+RSfimin2012 = R12012.multiply(R1AB12012, axis = 0)
+RSfimax2012 = R12012.multiply(R1AB22012, axis = 0)
+STfimin2012 = (RSfimin2012.sum(axis = 0)/10000 - np.mean(R12012)**2)/varianceR12012
+STfimax2012 = (RSfimax2012.sum(axis = 0)/10000 - np.mean(R12012)**2)/varianceR12012
+RSfimin2013 = R12013.multiply(R1AB12013, axis = 0)
+RSfimax2013 = R12013.multiply(R1AB22013, axis = 0)
+STfimin2013 = (RSfimin2013.sum(axis = 0)/10000 - np.mean(R12013)**2)/varianceR12013
+STfimax2013 = (RSfimax2013.sum(axis = 0)/10000 - np.mean(R12013)**2)/varianceR12013
+RSfimin2014 = R12014.multiply(R1AB12014, axis = 0)
+RSfimax2014 = R12014.multiply(R1AB22014, axis = 0)
+STfimin2014 = (RSfimin2014.sum(axis = 0)/10000 - np.mean(R12014)**2)/varianceR12014
+STfimax2014 = (RSfimax2014.sum(axis = 0)/10000 - np.mean(R12014)**2)/varianceR12014
+RSfimin2015 = R12015.multiply(R1AB12015, axis = 0)
+RSfimax2015 = R12015.multiply(R1AB22015, axis = 0)
+STfimin2015 = (RSfimin2015.sum(axis = 0)/10000 - np.mean(R12015)**2)/varianceR12015
+STfimax2015 = (RSfimax2015.sum(axis = 0)/10000 - np.mean(R12015)**2)/varianceR12015
+SfiMax2007 = pd.Series(STfimax2007)
+SfiMax2008 = pd.Series(STfimax2008)
+SfiMax2009 = pd.Series(STfimax2009)
+SfiMax2010 = pd.Series(STfimax2010)
+SfiMax2011 = pd.Series(STfimax2011)
+SfiMax2012 = pd.Series(STfimax2012)
+SfiMax2013 = pd.Series(STfimax2013)
+SfiMax2014 = pd.Series(STfimax2014)
+SfiMax2015 = pd.Series(STfimax2015)
+Sfimin2007 = pd.Series(STfimin2007)
+Sfimin2008 = pd.Series(STfimin2008)
+Sfimin2009 = pd.Series(STfimin2009)
+Sfimin2010 = pd.Series(STfimin2010)
+Sfimin2011 = pd.Series(STfimin2011)
+Sfimin2012 = pd.Series(STfimin2012)
+Sfimin2013 = pd.Series(STfimin2013)
+Sfimin2014 = pd.Series(STfimin2014)
+Sfimin2015 = pd.Series(STfimin2015)
+Max08 = pd.concat([SfiMax2007, SfiMax2008], axis = 1, ignore_index = True)
+Max09 = pd.concat([Max08, SfiMax2009], axis = 1, ignore_index = True)
+Max10 = pd.concat([Max09, SfiMax2010], axis = 1, ignore_index = True)
+Max11 = pd.concat([Max10, SfiMax2011], axis = 1, ignore_index = True)
+Max12 = pd.concat([Max11, SfiMax2012], axis = 1, ignore_index = True)
+Max13 = pd.concat([Max12, SfiMax2013], axis = 1, ignore_index = True)
+Max14 = pd.concat([Max13, SfiMax2014], axis = 1, ignore_index = True)
+STFiMax = pd.concat([Max14, SfiMax2015], axis = 1, ignore_index = True)
+min08 = pd.concat([Sfimin2007, Sfimin2008], axis = 1, ignore_index = True)
+min09 = pd.concat([min08, Sfimin2009], axis = 1, ignore_index = True)
+min10 = pd.concat([min09, Sfimin2010], axis = 1, ignore_index = True)
+min11 = pd.concat([min10, Sfimin2011], axis = 1, ignore_index = True)
+min12 = pd.concat([min11, Sfimin2012], axis = 1, ignore_index = True)
+min13 = pd.concat([min12, Sfimin2013], axis = 1, ignore_index = True)
+min14 = pd.concat([min13, Sfimin2014], axis = 1, ignore_index = True)
+STFimin = pd.concat([min14, Sfimin2015], axis = 1, ignore_index = True)
+STFiMax2 = STFiMax.rename(columns=lambda x: x+2007)
+STFimin2 = STFimin.rename(columns=lambda x: x+2007)
+STot = STFiMax2 + STFimin2
+STot = STFiTot.sort_values([], ascending = True)
+
+# Export the project to an .xls spreadsheet
+writer = pd.ExcelWriter('C:/Users/Samuele/Dropbox/ECGC_Barcelona/1.Projects/01-DG_REGIO/Work/ERDF2007-2013_Sensitivity.xlsx')
+STFiMax2.to_excel(writer,'ST_Fi_Max')
+STFimin2.to_excel(writer,'ST_Fi_min')
+writer.save()
+

@@ -1,0 +1,571 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import chaospy as cp
+import random
+from scipy import stats
+%matplotlib inline
+
+df2 = pd.read_excel('Index slope 94-99.xlsx', sheetname='ESF94-99', parse_cols = 'BZ:CP')
+df2.columns = df2.iloc[2]
+del df2[1993]
+df3 = df2.iloc[3:217]
+df4 = df3.set_index('Row Labels')
+mu = pd.DataFrame(index = [1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007], \
+data = (df4.columns.values-1993)*(df4[2007]['AT11']-df4[1994]['AT11'])/(2003-1993))
+mu = mu.rename(columns={0: 'mu1'})
+df4b = pd.concat([df4, mu.T])
+for i in range (2004,2008):
+    df4b[i]['mu1'] = 1
+
+for i, row in df4b.iterrows():
+    b = (df4b[1994]-df4b[1994]['mu1'], df4b[1995]-df4b[1995]['mu1'], df4b[1996]-df4b[1996]['mu1'],\
+    df4b[1997]-df4b[1997]['mu1'], df4b[1998]-df4b[1998]['mu1'], df4b[1999]-df4b[1999]['mu1'], \
+    df4b[2000]-df4b[2000]['mu1'], df4b[2001]-df4b[2001]['mu1'], df4b[2002]-df4b[2002]['mu1'], \
+    df4b[2003]-df4b[2003]['mu1'], df4b[2004]-df4b[2004]['mu1'], df4b[2005]-df4b[2005]['mu1'],\
+    df4b[2006]-df4b[2006]['mu1'], df4b[2007]-df4b[2007]['mu1'])
+    c = sum(b)
+    df4b['muavg']= c
+    
+# Compute the relative scale
+df4b['murel']=(max(df4b['muavg'])-df4b['muavg'])/(max(df4b['muavg'])-min(df4b['muavg']))
+df6 = df4b.sort_values(['murel'], ascending = True)
+df7 = df6.drop('mu1')
+
+# Prepare for the expenditure allocations
+df21 = pd.read_excel('Index slope 94-99.xlsx', sheetname='EAGGF94-99', parse_cols = 'H:V')
+df21.columns = df21.iloc[3]
+df31 = df21.iloc[4:217]
+df41 = df31.set_index('Row Labels')
+df51 = df41.T.fillna(0)
+
+# Define the residues A
+B9 = []
+for n in range(1,10):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B9.append(A(n))
+C9 = np.array(B9)
+D9 = np.insert(C9[0], [0, 0, 0, 0, 0, 0, 0, 0], 0)
+E9 = np.insert(C9[1], [0, 0, 0, 0, 0, 0, 0], 0)
+F9 = np.insert(C9[2], [0, 0, 0, 0, 0, 0], 0)
+G9 = np.insert(C9[3], [0, 0, 0, 0, 0], 0)
+H9 = np.insert(C9[4], [0, 0, 0, 0], 0)
+I9 = np.insert(C9[5], [0, 0, 0], 0)
+J9 = np.insert(C9[6], [0, 0], 0)
+K9 = np.insert(C9[7], [0], 0)
+L9 = np.array(C9[8])
+M9 = (D9, E9, F9, G9, H9, I9, J9, K9, L9)
+
+B8 = []
+for n in range(1,9):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B8.append(A(n))
+C8 = np.array(B8)
+D8 = np.insert(C8[0], [0, 0, 0, 0, 0, 0, 0], 0)
+E8 = np.insert(C8[1], [0, 0, 0, 0, 0, 0], 0)
+F8 = np.insert(C8[2], [0, 0, 0, 0, 0], 0)
+G8 = np.insert(C8[3], [0, 0, 0, 0], 0)
+H8 = np.insert(C8[4], [0, 0, 0], 0)
+I8 = np.insert(C8[5], [0, 0], 0)
+J8 = np.insert(C8[6], [0], 0)
+K8 = np.array(C8[7])
+L8 = (D8, E8, F8, G8, H8, I8, J8, K8)
+
+B7 = []
+for n in range(1,8):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B7.append(A(n))
+C7 = np.array(B7)
+D7 = np.insert(C7[0], [0, 0, 0, 0, 0, 0], 0)
+E7 = np.insert(C7[1], [0, 0, 0, 0, 0], 0)
+F7 = np.insert(C7[2], [0, 0, 0, 0], 0)
+G7 = np.insert(C7[3], [0, 0, 0], 0)
+H7 = np.insert(C7[4], [0, 0], 0)
+I7 = np.insert(C7[5], [0], 0)
+J7 = np.array(C7[6])
+K7 = (D7, E7, F7, G7, H7, I7, J7)
+
+B6 = []
+for n in range(1,7):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B6.append(A(n))
+C6 = np.array(B6)
+D6 = np.insert(C6[0], [0, 0, 0, 0, 0], 0)
+E6 = np.insert(C6[1], [0, 0, 0, 0], 0)
+F6 = np.insert(C6[2], [0, 0, 0], 0)
+G6 = np.insert(C6[3], [0, 0], 0)
+H6 = np.insert(C6[4], [0], 0)
+I6 = np.array(C6[5])
+J6 = (D6, E6, F6, G6, H6, I6)
+
+B5 = []
+for n in range(1,6):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B5.append(A(n))
+C5 = np.array(B5)
+D5 = np.insert(C5[0], [0, 0, 0, 0], 0)
+E5 = np.insert(C5[1], [0, 0, 0], 0)
+F5 = np.insert(C5[2], [0, 0], 0)
+G5 = np.insert(C5[3], [0], 0)
+H5 = np.array(C5[4])
+I5 = (D5, E5, F5, G5, H5)
+
+B4 = []
+for n in range(1,5):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B4.append(A(n))
+C4 = np.array(B4)
+D4 = np.insert(C4[0], [0, 0, 0], 0)
+E4 = np.insert(C4[1], [0, 0], 0)
+F4 = np.insert(C4[2], [0], 0)
+G4 = np.array(C4[3])
+H4 = (D4, E4, F4, G4)
+
+B3 = []
+for n in range(1,4):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B3.append(A(n))
+C3 = np.array(B3)
+D3 = np.insert(C3[0], [0, 0], 0)
+E3 = np.insert(C3[1], [0], 0)
+F3 = np.array(C3[2])
+G3 = (D3, E3, F3)
+
+B2 = []
+for n in range(1,3):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B2.append(A(n))
+C2 = np.array(B2)
+D2 = np.insert(C2[0], [0], 0)
+E2 = np.array(C2[1])
+F2 = (D2, E2)
+
+B1 = []
+for n in range(1,2):
+    def A(n):
+        return [(2**(j))/(2**n-1) for j in range(n)]
+    B1.append(A(n))
+C1 = np.array(B1)
+E1 = (C1)
+
+# Define the FiMin and FiMax distributions
+FiMin = cp.Uniform(0.20, 0.40)
+distributionFiMin = FiMin.sample(10000, rule="S")
+np.random.shuffle(distributionFiMin)
+FiMax = cp.Uniform(0.80, 1.00)
+distributionFiMax = FiMax.sample(10000, rule="S")
+np.random.shuffle(distributionFiMax)
+
+# Define the FiMinB and FiMaxB distributions
+FiMinB = cp.Uniform(0.20, 0.40)
+distributionFiMinB = FiMinB.sample(10000, rule="S")
+np.random.shuffle(distributionFiMinB)
+FiMaxB = cp.Uniform(0.80, 1.00)
+distributionFiMaxB = FiMaxB.sample(10000, rule="S")
+np.random.shuffle(distributionFiMaxB)
+
+Rc = pd.DataFrame([])
+RcMax = pd.DataFrame([])
+Rcmin = pd.DataFrame([])
+for k, row in df7.iterrows():
+    muA = df7['murel']
+    distributionFi = distributionFiMax - muA * (distributionFiMax - distributionFiMin)
+    distributionFiAB2 = distributionFiMaxB - muA * (distributionFiMaxB - distributionFiMin)
+    distributionFiAB1 = distributionFiMax - muA * (distributionFiMax - distributionFiMinB)
+    Rc[k] = pd.DataFrame(distributionFi[k], columns = ['Fi'])
+    RcMax[k] = pd.DataFrame(distributionFiAB2[k], columns = ['Fi'])
+    Rcmin[k] = pd.DataFrame(distributionFiAB1[k], columns = ['Fi'])
+
+R2003 = pd.DataFrame([])
+R2002 = pd.DataFrame([])
+R2001 = pd.DataFrame([])
+R2000 = pd.DataFrame([])
+R1999 = pd.DataFrame([])
+R1998 = pd.DataFrame([])
+R1997 = pd.DataFrame([])
+R1996 = pd.DataFrame([])
+R1995 = pd.DataFrame([])
+R1994 = pd.DataFrame([])
+RAB22003 = pd.DataFrame([])
+RAB22002 = pd.DataFrame([])
+RAB22001 = pd.DataFrame([])
+RAB22000 = pd.DataFrame([])
+RAB21999 = pd.DataFrame([])
+RAB21998 = pd.DataFrame([])
+RAB21997 = pd.DataFrame([])
+RAB21996 = pd.DataFrame([])
+RAB21995 = pd.DataFrame([])
+RAB21994 = pd.DataFrame([])
+RAB12003 = pd.DataFrame([])
+RAB12002 = pd.DataFrame([])
+RAB12001 = pd.DataFrame([])
+RAB12000 = pd.DataFrame([])
+RAB11999 = pd.DataFrame([])
+RAB11998 = pd.DataFrame([])
+RAB11997 = pd.DataFrame([])
+RAB11996 = pd.DataFrame([])
+RAB11995 = pd.DataFrame([])
+RAB11994 = pd.DataFrame([])
+R12003 = pd.DataFrame([])
+R12002 = pd.DataFrame([])
+R12001 = pd.DataFrame([])
+R12000 = pd.DataFrame([])
+R11999 = pd.DataFrame([])
+R11998 = pd.DataFrame([])
+R11997 = pd.DataFrame([])
+R11996 = pd.DataFrame([])
+R11995 = pd.DataFrame([])
+R11994 = pd.DataFrame([])
+R1AB22003 = pd.DataFrame([])
+R1AB22002 = pd.DataFrame([])
+R1AB22001 = pd.DataFrame([])
+R1AB22000 = pd.DataFrame([])
+R1AB21999 = pd.DataFrame([])
+R1AB21998 = pd.DataFrame([])
+R1AB21997 = pd.DataFrame([])
+R1AB21996 = pd.DataFrame([])
+R1AB21995 = pd.DataFrame([])
+R1AB21994 = pd.DataFrame([])
+R1AB12003 = pd.DataFrame([])
+R1AB12002 = pd.DataFrame([])
+R1AB12001 = pd.DataFrame([])
+R1AB12000 = pd.DataFrame([])
+R1AB11999 = pd.DataFrame([])
+R1AB11998 = pd.DataFrame([])
+R1AB11997 = pd.DataFrame([])
+R1AB11996 = pd.DataFrame([])
+R1AB11995 = pd.DataFrame([])
+R1AB11994 = pd.DataFrame([])
+
+# Define the FiMin and FiMax distributions
+FiMin = cp.Uniform(0.20, 0.40)
+distributionFiMin = FiMin.sample(10000, rule="S")
+np.random.shuffle(distributionFiMin)
+FiMax = cp.Uniform(0.80, 1.00)
+distributionFiMax = FiMax.sample(10000, rule="S")
+np.random.shuffle(distributionFiMax)
+
+# Define the FiMinB and FiMaxB distributions
+FiMinB = cp.Uniform(0.20, 0.40)
+distributionFiMinB = FiMinB.sample(10000, rule="S")
+np.random.shuffle(distributionFiMinB)
+FiMaxB = cp.Uniform(0.80, 1.00)
+distributionFiMaxB = FiMaxB.sample(10000, rule="S")
+np.random.shuffle(distributionFiMaxB)
+
+Rc = pd.DataFrame([])
+RcMax = pd.DataFrame([])
+Rcmin = pd.DataFrame([])
+for k, row in df7.iterrows():
+    muA = df7['murel']
+    distributionFi = distributionFiMax - muA * (distributionFiMax - distributionFiMin)
+    distributionFiAB2 = distributionFiMaxB - muA * (distributionFiMaxB - distributionFiMin)
+    distributionFiAB1 = distributionFiMax - muA * (distributionFiMax - distributionFiMinB)
+    Rc[k] = pd.DataFrame(distributionFi[k], columns = ['Fi'])
+    RcMax[k] = pd.DataFrame(distributionFiAB2[k], columns = ['Fi'])
+    Rcmin[k] = pd.DataFrame(distributionFiAB1[k], columns = ['Fi'])
+
+R2003 = pd.DataFrame([])
+R2002 = pd.DataFrame([])
+R2001 = pd.DataFrame([])
+R2000 = pd.DataFrame([])
+R1999 = pd.DataFrame([])
+R1998 = pd.DataFrame([])
+R1997 = pd.DataFrame([])
+R1996 = pd.DataFrame([])
+R1995 = pd.DataFrame([])
+R1994 = pd.DataFrame([])
+RAB22003 = pd.DataFrame([])
+RAB22002 = pd.DataFrame([])
+RAB22001 = pd.DataFrame([])
+RAB22000 = pd.DataFrame([])
+RAB21999 = pd.DataFrame([])
+RAB21998 = pd.DataFrame([])
+RAB21997 = pd.DataFrame([])
+RAB21996 = pd.DataFrame([])
+RAB21995 = pd.DataFrame([])
+RAB21994 = pd.DataFrame([])
+RAB12003 = pd.DataFrame([])
+RAB12002 = pd.DataFrame([])
+RAB12001 = pd.DataFrame([])
+RAB12000 = pd.DataFrame([])
+RAB11999 = pd.DataFrame([])
+RAB11998 = pd.DataFrame([])
+RAB11997 = pd.DataFrame([])
+RAB11996 = pd.DataFrame([])
+RAB11995 = pd.DataFrame([])
+RAB11994 = pd.DataFrame([])
+R12003 = pd.DataFrame([])
+R12002 = pd.DataFrame([])
+R12001 = pd.DataFrame([])
+R12000 = pd.DataFrame([])
+R11999 = pd.DataFrame([])
+R11998 = pd.DataFrame([])
+R11997 = pd.DataFrame([])
+R11996 = pd.DataFrame([])
+R11995 = pd.DataFrame([])
+R11994 = pd.DataFrame([])
+R1AB22003 = pd.DataFrame([])
+R1AB22002 = pd.DataFrame([])
+R1AB22001 = pd.DataFrame([])
+R1AB22000 = pd.DataFrame([])
+R1AB21999 = pd.DataFrame([])
+R1AB21998 = pd.DataFrame([])
+R1AB21997 = pd.DataFrame([])
+R1AB21996 = pd.DataFrame([])
+R1AB21995 = pd.DataFrame([])
+R1AB21994 = pd.DataFrame([])
+R1AB12003 = pd.DataFrame([])
+R1AB12002 = pd.DataFrame([])
+R1AB12001 = pd.DataFrame([])
+R1AB12000 = pd.DataFrame([])
+R1AB11999 = pd.DataFrame([])
+R1AB11998 = pd.DataFrame([])
+R1AB11997 = pd.DataFrame([])
+R1AB11996 = pd.DataFrame([])
+R1AB11995 = pd.DataFrame([])
+R1AB11994 = pd.DataFrame([])
+
+for c in df51:
+    n9 = int(muA[c]*(9-1))+1
+    n8 = int(muA[c]*(8-1))+1
+    n7 = int(muA[c]*(7-1))+1
+    n6 = int(muA[c]*(6-1))+1
+    n5 = int(muA[c]*(5-1))+1
+    n4 = int(muA[c]*(4-1))+1
+    n3 = int(muA[c]*(3-1))+1
+    n2 = int(muA[c]*(2-1))+1
+    Q9 = random.choice(M9[0:n9])
+    Q8 = random.choice(L8[0:n8])
+    Q7 = random.choice(K7[0:n7])
+    Q6 = random.choice(J6[0:n6])
+    Q5 = random.choice(I5[0:n5])
+    Q4 = random.choice(H4[0:n4])
+    Q3 = random.choice(G3[0:n3])
+    Q2 = random.choice(F2[0:n2])
+    R2003[c] = Rc[c]*(df51[c][2003])+df51[c][2004]+df51[c][2005]+df51[c][2006]+df51[c][2007]
+    R2002[c] = Rc[c]*(df51[c][2002])
+    R2001[c] = Rc[c]*(df51[c][2001])
+    R2000[c] = Rc[c]*(df51[c][2000])
+    R1999[c] = Rc[c]*(df51[c][1999])
+    R1998[c] = Rc[c]*(df51[c][1998])
+    R1997[c] = Rc[c]*(df51[c][1997])
+    R1996[c] = Rc[c]*(df51[c][1996])
+    R1995[c] = Rc[c]*(df51[c][1995])
+    R1994[c] = (Rc[c]/Rc[c])*df51[c][1994]
+    RAB22003[c] = RcMax[c]*(df51[c][2003])+df51[c][2004]+df51[c][2005]+df51[c][2006]+df51[c][2007]
+    RAB22002[c] = RcMax[c]*(df51[c][2002])
+    RAB22001[c] = RcMax[c]*(df51[c][2001])
+    RAB22000[c] = RcMax[c]*(df51[c][2000])
+    RAB21999[c] = RcMax[c]*(df51[c][1999])
+    RAB21998[c] = RcMax[c]*(df51[c][1998])
+    RAB21997[c] = RcMax[c]*(df51[c][1997])
+    RAB21996[c] = RcMax[c]*(df51[c][1996])
+    RAB21995[c] = RcMax[c]*(df51[c][1995])
+    RAB21994[c] = (RcMax[c]/RcMax[c])*df51[c][1994]
+    RAB12003[c] = Rcmin[c]*(df51[c][2003])+df51[c][2004]+df51[c][2005]+df51[c][2006]+df51[c][2007]
+    RAB12002[c] = Rcmin[c]*(df51[c][2002])
+    RAB12001[c] = Rcmin[c]*(df51[c][2001])
+    RAB12000[c] = Rcmin[c]*(df51[c][2000])
+    RAB11999[c] = Rcmin[c]*(df51[c][1999])
+    RAB11998[c] = Rcmin[c]*(df51[c][1998])
+    RAB11997[c] = Rcmin[c]*(df51[c][1997])
+    RAB11996[c] = Rcmin[c]*(df51[c][1996])
+    RAB11995[c] = Rcmin[c]*(df51[c][1995])
+    RAB11994[c] = (Rcmin[c]/Rcmin[c])*df51[c][1994]
+    R12003[c] = R2003[c]
+    R12002[c] = R2002[c] + (1 - Rc[c]) * df51[c][2003] *  Q9[8]
+    R12001[c] = R2001[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[7] + df51[c][2002] * Q8[7])
+    R12000[c] = R2000[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[6]\
+    + df51[c][2002] * Q8[6] + df51[c][2001] * Q7[6])
+    R11999[c] = R1999[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[5]\
+    + df51[c][2002] * Q8[5] + df51[c][2001] * Q7[5] \
+    + df51[c][2000] * Q6[5])
+    R11998[c] = R1998[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[4]\
+    + df51[c][2002] * Q8[4] + df51[c][2001] * Q7[4] \
+    + df51[c][2000] * Q6[4] + df51[c][1999] * Q5[4])
+    R11997[c] = R1997[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[3]\
+    + df51[c][2002] * Q8[3] + df51[c][2001] * Q7[3] \
+    + df51[c][2000] * Q6[3] + df51[c][1999] * Q5[3] \
+    + df51[c][1998] * Q4[3])
+    R11996[c] = R1996[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[2]\
+    + df51[c][2002] * Q8[2] + df51[c][2001] * Q7[2] \
+    + df51[c][2000] * Q6[2] + df51[c][1999] * Q5[2] \
+    + df51[c][1998] * Q4[2] + df51[c][1997] * Q3[2])
+    R11995[c] = R1995[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[1]\
+    + df51[c][2002] * Q8[1] + df51[c][2001] * Q7[1] \
+    + df51[c][2000] * Q6[1] + df51[c][1999] * Q5[1] \
+    + df51[c][1998] * Q4[1] + df51[c][1997] * Q3[1] \
+    + df51[c][1996] * Q2[1])
+    R11994[c] = R1994[c] + (1 - Rc[c]) * (df51[c][2003] *  Q9[0]\
+    + df51[c][2002] * Q8[0] + df51[c][2001] * Q7[0] \
+    + df51[c][2000] * Q6[0] + df51[c][1999] * Q5[0] \
+    + df51[c][1998] * Q4[0] + df51[c][1997] * Q3[0] \
+    + df51[c][1996] * Q2[0] + df51[c][1995])
+    R1AB22003[c] = RAB22003[c]
+    R1AB22002[c] = RAB22002[c] + (1 - RcMax[c]) * df51[c][2003] *  Q9[8]
+    R1AB22001[c] = RAB22001[c] + (1 - RcMax[c]) * (df51[c][2003] *  Q9[7] + df51[c][2002] * Q8[7])
+    R1AB22000[c] = RAB22000[c] + (1 - RcMax[c]) * (df51[c][2003] *  Q9[6]\
+    + df51[c][2002] * Q8[6] + df51[c][2001] * Q7[6])
+    R1AB21999[c] = RAB21999[c] + (1 - RcMax[c]) * (df51[c][2003] *  Q9[5]\
+    + df51[c][2002] * Q8[5] + df51[c][2001] * Q7[5] \
+    + df51[c][2000] * Q6[5])
+    R1AB21998[c] = RAB21998[c] + (1 - RcMax[c]) * (df51[c][2003] *  Q9[4]\
+    + df51[c][2002] * Q8[4] + df51[c][2001] * Q7[4] \
+    + df51[c][2000] * Q6[4] + df51[c][1999] * Q5[4])
+    R1AB21997[c] = RAB21997[c] + (1 - RcMax[c]) * (df51[c][2003] *  Q9[3]\
+    + df51[c][2002] * Q8[3] + df51[c][2001] * Q7[3] \
+    + df51[c][2000] * Q6[3] + df51[c][1999] * Q5[3] \
+    + df51[c][1998] * Q4[3])
+    R1AB21996[c] = RAB21996[c] + (1 - RcMax[c]) * (df51[c][2003] *  Q9[2]\
+    + df51[c][2002] * Q8[2] + df51[c][2001] * Q7[2] \
+    + df51[c][2000] * Q6[2] + df51[c][1999] * Q5[2] \
+    + df51[c][1998] * Q4[2] + df51[c][1997] * Q3[2])
+    R1AB21995[c] = RAB21995[c] + (1 - RcMax[c]) * (df51[c][2003] *  Q9[1]\
+    + df51[c][2002] * Q8[1] + df51[c][2001] * Q7[1] \
+    + df51[c][2000] * Q6[1] + df51[c][1999] * Q5[1] \
+    + df51[c][1998] * Q4[1] + df51[c][1997] * Q3[1] \
+    + df51[c][1996] * Q2[1])
+    R1AB21994[c] = RAB21994[c] + (1 - RcMax[c]) * (df51[c][2003] *  Q9[0]\
+    + df51[c][2002] * Q8[0] + df51[c][2001] * Q7[0] \
+    + df51[c][2000] * Q6[0] + df51[c][1999] * Q5[0] \
+    + df51[c][1998] * Q4[0] + df51[c][1997] * Q3[0] \
+    + df51[c][1996] * Q2[0] + df51[c][1995])
+    R1AB12003[c] = RAB12003[c]
+    R1AB12002[c] = RAB12002[c] + (1 - Rcmin[c]) * df51[c][2003] *  Q9[8]
+    R1AB12001[c] = RAB12001[c] + (1 - Rcmin[c]) * (df51[c][2003] *  Q9[7] + df51[c][2002] * Q8[7])
+    R1AB12000[c] = RAB12000[c] + (1 - Rcmin[c]) * (df51[c][2003] *  Q9[6]\
+    + df51[c][2002] * Q8[6] + df51[c][2001] * Q7[6])
+    R1AB11999[c] = RAB11999[c] + (1 - Rcmin[c]) * (df51[c][2003] *  Q9[5]\
+    + df51[c][2002] * Q8[5] + df51[c][2001] * Q7[5] \
+    + df51[c][2000] * Q6[5])
+    R1AB11998[c] = RAB11998[c] + (1 - Rcmin[c]) * (df51[c][2003] *  Q9[4]\
+    + df51[c][2002] * Q8[4] + df51[c][2001] * Q7[4] \
+    + df51[c][2000] * Q6[4] + df51[c][1999] * Q5[4])
+    R1AB11997[c] = RAB11997[c] + (1 - Rcmin[c]) * (df51[c][2003] *  Q9[3]\
+    + df51[c][2002] * Q8[3] + df51[c][2001] * Q7[3] \
+    + df51[c][2000] * Q6[3] + df51[c][1999] * Q5[3] \
+    + df51[c][1998] * Q4[3])
+    R1AB11996[c] = RAB11996[c] + (1 - Rcmin[c]) * (df51[c][2003] *  Q9[2]\
+    + df51[c][2002] * Q8[2] + df51[c][2001] * Q7[2] \
+    + df51[c][2000] * Q6[2] + df51[c][1999] * Q5[2] \
+    + df51[c][1998] * Q4[2] + df51[c][1997] * Q3[2])
+    R1AB11995[c] = RAB11995[c] + (1 - Rcmin[c]) * (df51[c][2003] *  Q9[1]\
+    + df51[c][2002] * Q8[1] + df51[c][2001] * Q7[1] \
+    + df51[c][2000] * Q6[1] + df51[c][1999] * Q5[1] \
+    + df51[c][1998] * Q4[1] + df51[c][1997] * Q3[1] \
+    + df51[c][1996] * Q2[1])
+    R1AB11994[c] = RAB11994[c] + (1 - Rcmin[c]) * (df51[c][2003] *  Q9[0]\
+    + df51[c][2002] * Q8[0] + df51[c][2001] * Q7[0] \
+    + df51[c][2000] * Q6[0] + df51[c][1999] * Q5[0] \
+    + df51[c][1998] * Q4[0] + df51[c][1997] * Q3[0] \
+    + df51[c][1996] * Q2[0] + df51[c][1995])
+
+# Sensitivity coefficient computation
+varianceR11994 = np.mean(R11994**2)-np.mean(R11994)**2
+varianceR11995 = np.mean(R11995**2)-np.mean(R11995)**2
+varianceR11996 = np.mean(R11996**2)-np.mean(R11996)**2
+varianceR11997 = np.mean(R11997**2)-np.mean(R11997)**2
+varianceR11998 = np.mean(R11998**2)-np.mean(R11998)**2
+varianceR11999 = np.mean(R11999**2)-np.mean(R11999)**2
+varianceR12000 = np.mean(R12000**2)-np.mean(R12000)**2
+varianceR12001 = np.mean(R12001**2)-np.mean(R12001)**2
+varianceR12002 = np.mean(R12002**2)-np.mean(R12002)**2
+varianceR12003 = np.mean(R12003**2)-np.mean(R12003)**2
+
+RSfimin1994 = R11994.multiply(R1AB11994, axis = 0)
+RSfimax1994 = R11994.multiply(R1AB21994, axis = 0)
+STfimin1994 = (RSfimin1994.sum(axis = 0)/10000 - np.mean(R11994)**2)/varianceR11994
+STfimax1994 = (RSfimax1994.sum(axis = 0)/10000 - np.mean(R11994)**2)/varianceR11994
+RSfimin1995 = R11995.multiply(R1AB11995, axis = 0)
+RSfimax1995 = R11995.multiply(R1AB21995, axis = 0)
+STfimin1995 = (RSfimin1995.sum(axis = 0)/10000 - np.mean(R11995)**2)/varianceR11995
+STfimax1995 = (RSfimax1995.sum(axis = 0)/10000 - np.mean(R11995)**2)/varianceR11995
+RSfimin1996 = R11996.multiply(R1AB11996, axis = 0)
+RSfimax1996 = R11996.multiply(R1AB21996, axis = 0)
+STfimin1996 = (RSfimin1996.sum(axis = 0)/10000 - np.mean(R11996)**2)/varianceR11996
+STfimax1996 = (RSfimax1996.sum(axis = 0)/10000 - np.mean(R11996)**2)/varianceR11996
+RSfimin1997 = R11997.multiply(R1AB11997, axis = 0)
+RSfimax1997 = R11997.multiply(R1AB21997, axis = 0)
+STfimin1997 = (RSfimin1997.sum(axis = 0)/10000 - np.mean(R11997)**2)/varianceR11997
+STfimax1997 = (RSfimax1997.sum(axis = 0)/10000 - np.mean(R11997)**2)/varianceR11997
+RSfimin1998 = R11998.multiply(R1AB11998, axis = 0)
+RSfimax1998 = R11998.multiply(R1AB21998, axis = 0)
+STfimin1998 = (RSfimin1998.sum(axis = 0)/10000 - np.mean(R11995)**2)/varianceR11998
+STfimax1998 = (RSfimax1998.sum(axis = 0)/10000 - np.mean(R11995)**2)/varianceR11998
+RSfimin1999 = R11999.multiply(R1AB11999, axis = 0)
+RSfimax1999 = R11999.multiply(R1AB21999, axis = 0)
+STfimin1999 = (RSfimin1999.sum(axis = 0)/10000 - np.mean(R11999)**2)/varianceR11999
+STfimax1999 = (RSfimax1999.sum(axis = 0)/10000 - np.mean(R11999)**2)/varianceR11999
+RSfimin2000 = R12000.multiply(R1AB12000, axis = 0)
+RSfimax2000 = R12000.multiply(R1AB22000, axis = 0)
+STfimin2000 = (RSfimin2000.sum(axis = 0)/10000 - np.mean(R12000)**2)/varianceR12000
+STfimax2000 = (RSfimax2000.sum(axis = 0)/10000 - np.mean(R12000)**2)/varianceR12000
+RSfimin2001 = R12001.multiply(R1AB12001, axis = 0)
+RSfimax2001 = R12001.multiply(R1AB22001, axis = 0)
+STfimin2001 = (RSfimin2001.sum(axis = 0)/10000 - np.mean(R12001)**2)/varianceR12001
+STfimax2001 = (RSfimax2001.sum(axis = 0)/10000 - np.mean(R12001)**2)/varianceR12001
+RSfimin2002 = R12002.multiply(R1AB12002, axis = 0)
+RSfimax2002 = R12002.multiply(R1AB22002, axis = 0)
+STfimin2002 = (RSfimin2002.sum(axis = 0)/10000 - np.mean(R12002)**2)/varianceR12002
+STfimax2002 = (RSfimax2002.sum(axis = 0)/10000 - np.mean(R12002)**2)/varianceR12002
+RSfimin2003 = R12003.multiply(R1AB12003, axis = 0)
+RSfimax2003 = R12003.multiply(R1AB22003, axis = 0)
+STfimin2003 = (RSfimin2003.sum(axis = 0)/10000 - np.mean(R12003)**2)/varianceR12003
+STfimax2003 = (RSfimax2003.sum(axis = 0)/10000 - np.mean(R12003)**2)/varianceR12003
+SfiMax1994 = pd.Series(STfimax1994)
+SfiMax1995 = pd.Series(STfimax1995)
+SfiMax1996 = pd.Series(STfimax1996)
+SfiMax1997 = pd.Series(STfimax1997)
+SfiMax1998 = pd.Series(STfimax1998)
+SfiMax1999 = pd.Series(STfimax1999)
+SfiMax2000 = pd.Series(STfimax2000)
+SfiMax2001 = pd.Series(STfimax2001)
+SfiMax2002 = pd.Series(STfimax2002)
+SfiMax2003 = pd.Series(STfimax2003)
+Sfimin1994 = pd.Series(STfimin1994)
+Sfimin1995 = pd.Series(STfimin1995)
+Sfimin1996 = pd.Series(STfimin1996)
+Sfimin1997 = pd.Series(STfimin1997)
+Sfimin1998 = pd.Series(STfimin1998)
+Sfimin1999 = pd.Series(STfimin1999)
+Sfimin2000 = pd.Series(STfimin2000)
+Sfimin2001 = pd.Series(STfimin2001)
+Sfimin2002 = pd.Series(STfimin2002)
+Sfimin2003 = pd.Series(STfimin2003)
+Max95 = pd.concat([SfiMax1994, SfiMax1995], axis = 1, ignore_index = True)
+Max96 = pd.concat([Max95, SfiMax1996], axis = 1, ignore_index = True)
+Max97 = pd.concat([Max96, SfiMax1997], axis = 1, ignore_index = True)
+Max98 = pd.concat([Max97, SfiMax1998], axis = 1, ignore_index = True)
+Max99 = pd.concat([Max98, SfiMax1999], axis = 1, ignore_index = True)
+Max00 = pd.concat([Max99, SfiMax2000], axis = 1, ignore_index = True)
+Max01 = pd.concat([Max00, SfiMax2001], axis = 1, ignore_index = True)
+Max02 = pd.concat([Max01, SfiMax2002], axis = 1, ignore_index = True)
+STFiMax = pd.concat([Max02, SfiMax2003], axis = 1, ignore_index = True)
+min95 = pd.concat([Sfimin1994, Sfimin1995], axis = 1, ignore_index = True)
+min96 = pd.concat([min95, Sfimin1996], axis = 1, ignore_index = True)
+min97 = pd.concat([min96, Sfimin1997], axis = 1, ignore_index = True)
+min98 = pd.concat([min97, Sfimin1998], axis = 1, ignore_index = True)
+min99 = pd.concat([min98, Sfimin1999], axis = 1, ignore_index = True)
+min00 = pd.concat([min99, Sfimin2000], axis = 1, ignore_index = True)
+min01 = pd.concat([min00, Sfimin2001], axis = 1, ignore_index = True)
+min02 = pd.concat([min01, Sfimin2002], axis = 1, ignore_index = True)
+STFimin = pd.concat([min02, Sfimin2003], axis = 1, ignore_index = True)
+STFiMax2 = STFiMax.rename(columns=lambda x: x+1994)
+STFimin2 = STFimin.rename(columns=lambda x: x+1994)
+STot = STFiMax2 + STFimin2
+STot = STFiTot.sort_values([], ascending = True)
+
+# Export the project to an .xls spreadsheet
+writer = pd.ExcelWriter('C:/Users/Samuele/Dropbox/ECGC_Barcelona/1.Projects/01-DG_REGIO/Work/EAGGF1994-2000_Sensitivity.xlsx')
+STFiMax2.to_excel(writer,'ST_Fi_Max')
+STFimin2.to_excel(writer,'ST_Fi_min')
+writer.save()
