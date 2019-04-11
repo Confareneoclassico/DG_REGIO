@@ -1,1 +1,1 @@
-Codes and everything about the tender contract for DG REGIO I have been partially working on.
+DG_REGIO tender contract - scripts and underpinning material.
